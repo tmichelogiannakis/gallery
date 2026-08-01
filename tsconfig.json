@@ -3,10 +3,15 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "skipLibCheck": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
@@ -16,6 +21,8 @@
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
+    "strictTemplates": true,
+    "strictStandalone": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true
   },
