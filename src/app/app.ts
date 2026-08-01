@@ -1,12 +1,17 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Shell } from './shell/shell';
+import { NavItem } from './shared/types';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Shell],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('gallery');
+  navItems: NavItem[] = [
+    { label: 'Photos', iconName: 'image', path: '/' },
+    { label: 'Favorites', iconName: 'favorite', path: '/favorites' }
+  ];
 }

@@ -1,23 +1,46 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
 import { App } from './app';
 
 describe('App', () => {
+  let component: App;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App]
+      imports: [App],
+      providers: [provideRouter([])]
     }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    component = fixture.componentInstance;
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should contain a router-outlet inside app-shell', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, gallery');
+    fixture.detectChanges();
+    const outlet = fixture.debugElement.query(By.css('app-shell router-outlet'));
+    expect(outlet).not.toBeNull();
+  });
+
+  it('should pass navItems to app-shell and render navigation links in the DOM', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const navLinks = fixture.debugElement.queryAll(By.css('app-shell app-header nav a'));
+    expect(navLinks.length).toBe(2);
+    expect(navLinks.map((link) => (link.nativeElement as HTMLElement).textContent?.trim())).toEqual(
+      ['Photos', 'Favorites']
+    );
+
+    const iconNames = navLinks.map(
+      (link) => link.query(By.directive(MatIcon))?.componentInstance.fontIcon
+    );
+    expect(iconNames).toEqual(['image', 'favorite']);
   });
 });
