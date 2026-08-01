@@ -3,3 +3,12 @@ export interface NavItem {
   iconName?: string;
   path: string;
 }
+
+export interface Photo {
+  id: string;
+  width: number;
+  height: number;
+  author: string;
+  thumbUrl: string;
+  originalUrl: string;
+}

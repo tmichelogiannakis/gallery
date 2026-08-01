@@ -1,0 +1,46 @@
+import { Service, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { catchError, delay, map, Observable, of, retry } from 'rxjs';
+import { Photo } from '../../shared/types';
+
+interface ListItem {
+  readonly id: string;
+  readonly author: string;
+  readonly width: number;
+  readonly height: number;
+  readonly url: string;
+  readonly download_url: string;
+}
+
+export const PICSUM_LIST_URL = 'https://picsum.photos/v2/list';
+const DELAY_MS = 500;
+const PAGE_SIZE = 30;
+const RETRY_COUNT = 2;
+const RETRY_DELAY_MS = 250;
+
+@Service()
+export class Photos {
+  private readonly http = inject(HttpClient);
+
+  list(page: number): Observable<Photo[]> {
+    const params = new HttpParams().set('page', page).set('limit', PAGE_SIZE);
+
+    return this.http.get<ListItem[]>(PICSUM_LIST_URL, { params }).pipe(
+      delay(DELAY_MS),
+      map((items) =>
+        items.map(({ id, width, height, download_url, author }) => {
+          return {
+            id,
+            width,
+            height,
+            author,
+            originalUrl: download_url,
+            thumbUrl: `https://picsum.photos/id/${id}/400/600`
+          };
+        })
+      ),
+      retry({ count: RETRY_COUNT, delay: RETRY_DELAY_MS }),
+      catchError(() => of([]))
+    );
+  }
+}
