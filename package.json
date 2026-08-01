@@ -11,7 +11,10 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck:app && npm run typecheck:spec",
+    "typecheck:app": "ngc -p tsconfig.app.json --noEmit",
+    "typecheck:spec": "ngc -p tsconfig.spec.json --noEmit"
   },
   "private": true,
   "packageManager": "npm@11.16.0",
