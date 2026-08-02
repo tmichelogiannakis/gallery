@@ -16,10 +16,9 @@
   }
 
   @if (status() === 'error') {
-    <div class="photo-stream-error" role="alert">
-      <p class="photo-stream-error-message">Something went wrong while loading photos.</p>
+    <app-alert variant="error" message="Something went wrong while loading photos.">
       <button matButton="filled" type="button" (click)="retryFailedPage()">Try again</button>
-    </div>
+    </app-alert>
   }
 
   @if (canLoadMore()) {

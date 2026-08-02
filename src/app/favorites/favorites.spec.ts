@@ -26,12 +26,12 @@ describe('Favorites', () => {
   const renderedItems = () =>
     Array.from(fixture.nativeElement.querySelectorAll('app-photo-grid-item')) as HTMLElement[];
 
-  const emptyMessage = () => fixture.nativeElement.querySelector('.favorites-empty');
+  const emptyMessage = () => fixture.nativeElement.querySelector('app-alert:not(.alert-error)');
 
   const spinner = () => fixture.nativeElement.querySelector('.favorites-loading');
 
   const retryButton = () =>
-    fixture.nativeElement.querySelector('.favorites-error button') as HTMLButtonElement | null;
+    fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;
 
   const createComponent = async (favoritesService: Pick<FavoritesService, 'list'>) => {
     TestBed.configureTestingModule({

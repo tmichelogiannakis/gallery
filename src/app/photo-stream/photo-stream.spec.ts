@@ -45,7 +45,7 @@ describe('PhotoStream', () => {
   const sentinel = () => fixture.nativeElement.querySelector('.photo-stream-page-bottom');
 
   const retryButton = () =>
-    fixture.nativeElement.querySelector('.photo-stream-error button') as HTMLButtonElement | null;
+    fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;
 
   /** Stands in for the sentinel scrolling into view, which jsdom cannot produce on its own. */
   const scrollToSentinel = async () => {

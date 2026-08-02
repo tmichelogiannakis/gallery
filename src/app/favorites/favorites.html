@@ -16,13 +16,12 @@
   }
 
   @if (status() === 'error') {
-    <div class="favorites-error" role="alert">
-      <p class="favorites-error-message">Something went wrong while loading your favorites.</p>
+    <app-alert variant="error" message="Something went wrong while loading your favorites.">
       <button matButton="filled" type="button" (click)="loadFavorites()">Try again</button>
-    </div>
+    </app-alert>
   }
 
   @if (isEmpty()) {
-    <p class="favorites-empty">You have not added any photos to your favorites yet.</p>
+    <app-alert message="You have not added any photos to your favorites yet." />
   }
 </div>
