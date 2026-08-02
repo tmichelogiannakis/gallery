@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { Router, provideRouter } from '@angular/router';
 import { Subject, throwError } from 'rxjs';
 import type { MockInstance } from 'vitest';
 import { PhotoDetails } from './photo-details';
+import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
@@ -17,6 +19,8 @@ const photo: Photo = {
 describe('PhotoDetails', () => {
   let fixture: ComponentFixture<PhotoDetails>;
   let favoritesService: { remove: ReturnType<typeof vi.fn> };
+  let dialog: { open: ReturnType<typeof vi.fn> };
+  let confirmation: Subject<boolean>;
   let navigate: MockInstance<Router['navigate']>;
 
   const image = () => fixture.nativeElement.querySelector('img') as HTMLImageElement | null;
@@ -38,15 +42,23 @@ describe('PhotoDetails', () => {
     fixture.detectChanges();
   };
 
+  const answerConfirmation = (confirmed: boolean) => {
+    confirmation.next(confirmed);
+    fixture.detectChanges();
+  };
+
   const createComponent = (resolvedPhoto: Photo | null) => {
     favoritesService = { remove: vi.fn() };
+    confirmation = new Subject<boolean>();
+    dialog = { open: vi.fn(() => ({ afterClosed: () => confirmation })) };
 
     TestBed.configureTestingModule({
       imports: [PhotoDetails],
       providers: [
         providePicsumImageLoader(),
         provideRouter([]),
-        { provide: FavoritesService, useValue: favoritesService }
+        { provide: FavoritesService, useValue: favoritesService },
+        { provide: MatDialog, useValue: dialog }
       ]
     });
 
@@ -78,13 +90,35 @@ describe('PhotoDetails', () => {
     expect(image()).toBeNull();
   });
 
-  it('removes the photo from the favorites', () => {
+  it('asks for confirmation before removing the photo', () => {
     createComponent(photo);
     favoritesService.remove.mockReturnValue(new Subject<void>());
 
     clickRemove();
 
+    expect(dialog.open).toHaveBeenCalledWith(ConfirmDialog, expect.anything());
+    expect(favoritesService.remove).not.toHaveBeenCalled();
+  });
+
+  it('removes the photo from the favorites once the removal is confirmed', () => {
+    createComponent(photo);
+    favoritesService.remove.mockReturnValue(new Subject<void>());
+
+    clickRemove();
+    answerConfirmation(true);
+
     expect(favoritesService.remove).toHaveBeenCalledWith('0');
+  });
+
+  it('keeps the photo when the confirmation is declined', () => {
+    createComponent(photo);
+    favoritesService.remove.mockReturnValue(new Subject<void>());
+
+    clickRemove();
+    answerConfirmation(false);
+
+    expect(favoritesService.remove).not.toHaveBeenCalled();
+    expect(removeButton()?.disabled).toBe(false);
   });
 
   it('goes back to the favorites once the photo has been removed', () => {
@@ -93,6 +127,7 @@ describe('PhotoDetails', () => {
     favoritesService.remove.mockReturnValue(removal);
 
     clickRemove();
+    answerConfirmation(true);
     removal.next();
 
     expect(navigate).toHaveBeenCalledWith(['/favorites']);
@@ -103,6 +138,7 @@ describe('PhotoDetails', () => {
     favoritesService.remove.mockReturnValue(new Subject<void>());
 
     clickRemove();
+    answerConfirmation(true);
 
     expect(navigate).not.toHaveBeenCalled();
   });
@@ -112,8 +148,10 @@ describe('PhotoDetails', () => {
     favoritesService.remove.mockReturnValue(new Subject<void>());
 
     clickRemove();
+    answerConfirmation(true);
     fixture.componentInstance.removeFromFavorites();
 
+    expect(dialog.open).toHaveBeenCalledTimes(1);
     expect(favoritesService.remove).toHaveBeenCalledTimes(1);
     expect(removeButton()?.disabled).toBe(true);
   });
@@ -123,6 +161,7 @@ describe('PhotoDetails', () => {
     favoritesService.remove.mockReturnValue(throwError(() => new Error('failed')));
 
     clickRemove();
+    answerConfirmation(true);
 
     expect(errorAlert()).not.toBeNull();
     expect(navigate).not.toHaveBeenCalled();

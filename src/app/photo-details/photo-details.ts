@@ -2,9 +2,11 @@ import { Component, DestroyRef, computed, inject, input, signal } from '@angular
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { Alert } from '../shared/components/alert/alert';
+import { ConfirmDialog, ConfirmDialogData } from './components/confirm-dialog/confirm-dialog';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { PicsumLoaderParams } from '../core/providers/picsum-image-loader';
 import { Photo } from '../shared/types';
@@ -20,6 +22,7 @@ type RemovalStatus = 'idle' | 'removing' | 'error';
 export class PhotoDetails {
   private readonly favoritesService = inject(FavoritesService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly photo = input.required<Photo | null>();
@@ -45,9 +48,28 @@ export class PhotoDetails {
       return;
     }
 
+    const data: ConfirmDialogData = {
+      title: 'Remove from favorites?',
+      message: 'The photo will no longer appear in your favorites.',
+      confirmLabel: 'Remove',
+      cancelLabel: 'Keep'
+    };
+
+    this.dialog
+      .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, { data })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.remove(photo.id);
+        }
+      });
+  }
+
+  private remove(id: string): void {
     this.removalStatus.set('removing');
     this.favoritesService
-      .remove(photo.id)
+      .remove(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.router.navigate(['/favorites']),
