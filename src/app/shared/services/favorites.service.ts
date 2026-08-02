@@ -9,6 +9,10 @@ export const FAVORITES_URL = '/api/favorites';
 export class FavoritesService {
   private readonly http = inject(HttpClient);
 
+  list(): Observable<Photo[]> {
+    return this.http.get<Photo[]>(FAVORITES_URL);
+  }
+
   add(photo: Photo): Observable<Photo> {
     return this.http.post<Photo>(FAVORITES_URL, photo);
   }

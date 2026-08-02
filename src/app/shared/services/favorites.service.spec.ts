@@ -28,6 +28,25 @@ describe('FavoritesService', () => {
     httpMock.verify();
   });
 
+  it('reads the favorites from the favorites endpoint', () => {
+    service.list().subscribe();
+
+    const req = httpMock.expectOne(FAVORITES_URL);
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush([photo]);
+  });
+
+  it('emits the stored favorites', () => {
+    let result: Photo[] | undefined;
+    service.list().subscribe((favorites) => (result = favorites));
+
+    httpMock.expectOne(FAVORITES_URL).flush([photo]);
+
+    expect(result).toEqual([photo]);
+  });
+
   it('posts the photo to the favorites endpoint', () => {
     service.add(photo).subscribe();
 
