@@ -8,16 +8,27 @@ export const LATENCY_MS = 500;
 
 // Stands in for the favorites backend we do not have: persists to localStorage and answers like an endpoint
 export const favoritesInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url !== FAVORITES_URL || req.method !== 'POST') {
+  if (req.url !== FAVORITES_URL) {
     return next(req);
   }
 
-  const photo = req.body as Photo;
+  if (req.method === 'GET') {
+    const photos = readFavorites();
+    return defer(() =>
+      of(new HttpResponse<Photo[]>({ status: 200, statusText: 'OK', body: photos }))
+    ).pipe(delay(LATENCY_MS));
+  }
 
-  return defer(() => {
-    addPhotoToFavorites(photo);
-    return of(new HttpResponse<Photo>({ status: 201, statusText: 'Created', body: photo }));
-  }).pipe(delay(LATENCY_MS));
+  if (req.method === 'POST') {
+    const photo = req.body as Photo;
+
+    return defer(() => {
+      addPhotoToFavorites(photo);
+      return of(new HttpResponse<Photo>({ status: 201, statusText: 'Created', body: photo }));
+    }).pipe(delay(LATENCY_MS));
+  }
+
+  return next(req);
 };
 
 const readFavorites = (): Photo[] => {

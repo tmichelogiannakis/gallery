@@ -1,1 +1,28 @@
-<p>favorites works!</p>
+<div class="favorites-container">
+  <app-photo-grid>
+    @for (photo of photos(); track photo.id; let i = $index) {
+      <app-photo-grid-item
+        [photo]="photo"
+        [priority]="i < 10"
+        (photoSelected)="navigateToPhotoDetails($event)"
+      />
+    }
+  </app-photo-grid>
+
+  @if (status() === 'loading') {
+    <div class="favorites-loading">
+      <mat-spinner diameter="80" aria-label="Loading favorites" />
+    </div>
+  }
+
+  @if (status() === 'error') {
+    <div class="favorites-error" role="alert">
+      <p class="favorites-error-message">Something went wrong while loading your favorites.</p>
+      <button matButton="filled" type="button" (click)="loadFavorites()">Try again</button>
+    </div>
+  }
+
+  @if (isEmpty()) {
+    <p class="favorites-empty">You have not added any photos to your favorites yet.</p>
+  }
+</div>

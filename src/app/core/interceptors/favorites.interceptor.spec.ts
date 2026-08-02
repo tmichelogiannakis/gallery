@@ -120,8 +120,57 @@ describe('favoritesInterceptor', () => {
     expect(storedFavorites()).toEqual([]);
   });
 
+  it('answers a read with the stored photos instead of reaching the network', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([otherPhoto, photo]));
+
+    let favorites: Photo[] | undefined;
+    http.get<Photo[]>(FAVORITES_URL).subscribe((res) => (favorites = res));
+    await settle();
+
+    expect(favorites).toEqual([otherPhoto, photo]);
+    httpMock.expectNone(FAVORITES_URL);
+  });
+
+  it('answers a read with no photos when nothing has been stored', async () => {
+    let favorites: Photo[] | undefined;
+    http.get<Photo[]>(FAVORITES_URL).subscribe((res) => (favorites = res));
+    await settle();
+
+    expect(favorites).toEqual([]);
+  });
+
+  it('answers a read with no photos when the stored favorites are unreadable', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, 'not json');
+
+    let favorites: Photo[] | undefined;
+    http.get<Photo[]>(FAVORITES_URL).subscribe((res) => (favorites = res));
+    await settle();
+
+    expect(favorites).toEqual([]);
+  });
+
+  it('reads back the photos it has stored', async () => {
+    postFavorite(photo).subscribe();
+    await settle();
+
+    let favorites: Photo[] | undefined;
+    http.get<Photo[]>(FAVORITES_URL).subscribe((res) => (favorites = res));
+    await settle();
+
+    expect(favorites).toEqual([photo]);
+  });
+
+  it('keeps a read pending until the faked latency has elapsed', async () => {
+    let favorites: Photo[] | undefined;
+    http.get<Photo[]>(FAVORITES_URL).subscribe((res) => (favorites = res));
+
+    await vi.advanceTimersByTimeAsync(LATENCY_MS - 1);
+
+    expect(favorites).toBeUndefined();
+  });
+
   it('leaves other methods on the favorites endpoint alone', async () => {
-    http.get<Photo[]>(FAVORITES_URL).subscribe();
+    http.delete<Photo[]>(FAVORITES_URL).subscribe();
     await settle();
 
     httpMock.expectOne(FAVORITES_URL).flush([]);
