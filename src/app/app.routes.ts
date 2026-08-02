@@ -14,7 +14,7 @@ export const routes: Routes = [
   },
   {
     path: 'photos/:id',
-    resolve: { photo: photoResolver },
+    resolve: { favorites: favoritesResolver, photo: photoResolver },
     loadComponent: () => import('./photo-details/photo-details').then((m) => m.PhotoDetails)
   }
 ];

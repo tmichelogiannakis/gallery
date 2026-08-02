@@ -25,21 +25,30 @@ describe('favoritesResolver', () => {
   const resolve = () =>
     TestBed.runInInjectionContext(() =>
       favoritesResolver({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot)
-    ) as Observable<Photo[]>;
+    ) as Observable<Photo[]> | Photo[];
 
   it('holds the navigation until the favorites arrive', async () => {
     setUp({ list: () => of(photos) });
 
-    await expect(firstValueFrom(resolve())).resolves.toEqual(photos);
+    await expect(firstValueFrom(resolve() as Observable<Photo[]>)).resolves.toEqual(photos);
     expect(TestBed.inject(FavoritesStore).photos()).toEqual(photos);
   });
 
-  it('reads again on a later visit', async () => {
+  it('lets a later visit through with the cached favorites', async () => {
     const list = vi.fn().mockReturnValue(of(photos));
     setUp({ list });
 
-    await firstValueFrom(resolve());
-    await firstValueFrom(resolve());
+    await firstValueFrom(resolve() as Observable<Photo[]>);
+
+    expect(resolve()).toEqual(photos);
+  });
+
+  it('reads again in the background on a later visit', async () => {
+    const list = vi.fn().mockReturnValue(of(photos));
+    setUp({ list });
+
+    await firstValueFrom(resolve() as Observable<Photo[]>);
+    resolve();
 
     expect(list).toHaveBeenCalledTimes(2);
   });
@@ -47,7 +56,7 @@ describe('favoritesResolver', () => {
   it('lets the navigation through when the request fails, so the page can offer a retry', async () => {
     setUp({ list: () => throwError(() => 'boom') });
 
-    await expect(firstValueFrom(resolve())).resolves.toEqual([]);
+    await expect(firstValueFrom(resolve() as Observable<Photo[]>)).resolves.toEqual([]);
     expect(TestBed.inject(FavoritesStore).status()).toBe('error');
   });
 });
