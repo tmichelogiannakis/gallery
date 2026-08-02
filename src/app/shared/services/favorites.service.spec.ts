@@ -47,6 +47,25 @@ describe('FavoritesService', () => {
     expect(result).toEqual([photo]);
   });
 
+  it('reads a single favorite from its own url', () => {
+    service.get(photo.id).subscribe();
+
+    const req = httpMock.expectOne(`${FAVORITES_URL}/${photo.id}`);
+
+    expect(req.request.method).toBe('GET');
+
+    req.flush(photo);
+  });
+
+  it('emits the requested favorite', () => {
+    let result: Photo | undefined;
+    service.get(photo.id).subscribe((favorite) => (result = favorite));
+
+    httpMock.expectOne(`${FAVORITES_URL}/${photo.id}`).flush(photo);
+
+    expect(result).toEqual(photo);
+  });
+
   it('posts the photo to the favorites endpoint', () => {
     service.add(photo).subscribe();
 

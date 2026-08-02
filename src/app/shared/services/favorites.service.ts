@@ -13,6 +13,10 @@ export class FavoritesService {
     return this.http.get<Photo[]>(FAVORITES_URL);
   }
 
+  get(id: string): Observable<Photo> {
+    return this.http.get<Photo>(`${FAVORITES_URL}/${id}`);
+  }
+
   add(photo: Photo): Observable<Photo> {
     return this.http.post<Photo>(FAVORITES_URL, photo);
   }
