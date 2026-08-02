@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { LoadingStore } from '../../services/loading.store';
 
@@ -10,4 +10,6 @@ import { LoadingStore } from '../../services/loading.store';
 })
 export class GlobalLoader {
   readonly loadingStore = inject(LoadingStore);
+
+  readonly statusMessage = computed(() => (this.loadingStore.isLoading() ? 'Loading' : ''));
 }

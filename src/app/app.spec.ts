@@ -3,6 +3,7 @@ import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { App } from './app';
+import { expectNoAxeViolations } from '../testing/axe';
 
 describe('App', () => {
   let component: App;
@@ -42,5 +43,11 @@ describe('App', () => {
       (link) => link.query(By.directive(MatIcon))?.componentInstance.fontIcon
     );
     expect(iconNames).toEqual(['image', 'favorite']);
+  });
+
+  it('has no axe violations', async () => {
+    const fixture = TestBed.createComponent(App);
+
+    await expectNoAxeViolations(fixture);
   });
 });

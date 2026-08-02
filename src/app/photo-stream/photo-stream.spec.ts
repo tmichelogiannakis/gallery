@@ -6,6 +6,7 @@ import { FavoritesService } from '../shared/services/favorites.service';
 import { ADD_ERROR_MESSAGE } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { expectNoAxeViolations } from '../../testing/axe';
 
 const firstPhoto: Photo = {
   id: '0',
@@ -45,6 +46,11 @@ describe('PhotoStream', () => {
     Array.from(fixture.nativeElement.querySelectorAll('app-photo-grid-item')) as HTMLElement[];
 
   const sentinel = () => fixture.nativeElement.querySelector('.photo-stream-page-bottom');
+
+  const liveRegion = () =>
+    fixture.nativeElement.querySelector('[role="status"]') as HTMLElement | null;
+
+  const grid = () => fixture.nativeElement.querySelector('app-photo-grid') as HTMLElement | null;
 
   const retryButton = () =>
     fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;
@@ -96,6 +102,12 @@ describe('PhotoStream', () => {
     expect(list).toHaveBeenCalledExactlyOnceWith(1);
   });
 
+  it('titles the page for screen-reader navigation', async () => {
+    await createComponent({ list: () => of(photos) });
+
+    expect(fixture.nativeElement.querySelector('h1').textContent).toBe('Photo stream');
+  });
+
   it('renders a grid item per photo', async () => {
     await createComponent({ list: () => of(photos) });
 
@@ -110,6 +122,33 @@ describe('PhotoStream', () => {
     expect(renderedItems()).toEqual([]);
   });
 
+  it('has no axe violations once the photos are rendered', async () => {
+    await createComponent({ list: () => of(photos) });
+
+    await expectNoAxeViolations(fixture);
+  });
+
+  it('has no axe violations while a page is in flight', async () => {
+    const list = vi.fn().mockReturnValueOnce(of(photos)).mockReturnValue(NEVER);
+
+    await createComponent({ list });
+    await scrollToSentinel();
+
+    await expectNoAxeViolations(fixture);
+  });
+
+  it('has no axe violations when a page fails', async () => {
+    const list = vi
+      .fn()
+      .mockReturnValueOnce(of(photos))
+      .mockReturnValue(throwError(() => 'boom'));
+
+    await createComponent({ list });
+    await scrollToSentinel();
+
+    await expectNoAxeViolations(fixture);
+  });
+
   it('appends the next page when the sentinel is reached', async () => {
     const list = vi.fn().mockReturnValueOnce(of(photos)).mockReturnValue(of(morePhotos));
 
@@ -118,6 +157,40 @@ describe('PhotoStream', () => {
 
     expect(list).toHaveBeenLastCalledWith(2);
     expect(renderedItems()).toHaveLength(4);
+  });
+
+  // Appended photos are a silent DOM change for a screen reader unless the page says so
+  it('announces each page that arrives', async () => {
+    const list = vi.fn().mockReturnValueOnce(of(photos)).mockReturnValue(of(morePhotos));
+
+    await createComponent({ list });
+
+    expect(liveRegion()?.textContent).toBe('2 more photos loaded');
+
+    await scrollToSentinel();
+
+    expect(liveRegion()?.textContent).toBe('2 more photos loaded');
+  });
+
+  it('announces that the stream has run out of photos', async () => {
+    const list = vi.fn().mockReturnValueOnce(of(photos)).mockReturnValue(of([]));
+
+    await createComponent({ list });
+    await scrollToSentinel();
+
+    expect(liveRegion()?.textContent).toBe('All photos loaded');
+  });
+
+  it('marks the grid busy while a page is in flight', async () => {
+    const list = vi.fn().mockReturnValueOnce(of(photos)).mockReturnValue(NEVER);
+
+    await createComponent({ list });
+
+    expect(grid()?.getAttribute('aria-busy')).toBe('false');
+
+    await scrollToSentinel();
+
+    expect(grid()?.getAttribute('aria-busy')).toBe('true');
   });
 
   it('dedupes photos that reappear when a page overlaps with previously loaded photos', async () => {

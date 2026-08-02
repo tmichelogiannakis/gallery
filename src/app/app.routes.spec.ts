@@ -3,6 +3,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Title } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { routes } from './app.routes';
 import { PhotoStream } from './photo-stream/photo-stream';
@@ -51,6 +52,17 @@ describe('app routes', () => {
     const component = await harness.navigateByUrl('/favorites', Favorites);
 
     expect(component).toBeInstanceOf(Favorites);
+  });
+
+  it('names each route in the document title', async () => {
+    const harness = await RouterTestingHarness.create();
+    const title = TestBed.inject(Title);
+
+    await harness.navigateByUrl('/');
+    expect(title.getTitle()).toBe('Photo stream · Gallery');
+
+    await harness.navigateByUrl('/favorites');
+    expect(title.getTitle()).toBe('Favorites · Gallery');
   });
 
   it('lazy loads PhotoDetails at "/photos/:id", bound to the prefetched photo', async () => {

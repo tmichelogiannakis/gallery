@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
+import { expectNoAxeViolations } from '../../../../testing/axe';
 
 describe('ConfirmDialog', () => {
   let fixture: ComponentFixture<ConfirmDialog>;
@@ -54,6 +55,12 @@ describe('ConfirmDialog', () => {
     });
 
     expect(text('.cancel-button')).toBe('Cancel');
+  });
+
+  it('has no axe violations', async () => {
+    await createComponent(data);
+
+    await expectNoAxeViolations(fixture);
   });
 
   it('confirms when the confirm button is pressed', async () => {

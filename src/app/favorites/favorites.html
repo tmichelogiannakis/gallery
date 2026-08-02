@@ -1,16 +1,13 @@
 <div class="favorites-container">
+  <h1 class="visually-hidden">Favorites</h1>
+
   @if (favoritesStore.error(); as favoritesError) {
     <app-alert variant="error" [message]="favoritesError" />
   }
 
   <app-photo-grid>
     @for (photo of favoritesStore.photos(); track photo.id; let i = $index) {
-      <app-photo-grid-item
-        [photo]="photo"
-        [priority]="i < 10"
-        action="open"
-        (photoSelected)="navigateToPhotoDetails($event)"
-      />
+      <app-photo-grid-item [photo]="photo" [priority]="i < 10" [link]="['/photos', photo.id]" />
     }
   </app-photo-grid>
 

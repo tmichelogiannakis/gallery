@@ -36,8 +36,8 @@
         <h1 class="photo-author">{{ photo.author }}</h1>
         <dl class="photo-meta">
           <div class="meta-entry">
-            <dt>Dimensions (pixels)</dt>
-            <dd>{{ dimensionsText() }}</dd>
+            <dt>Dimensions</dt>
+            <dd [attr.aria-label]="dimensionsLabel()">{{ dimensionsText() }}</dd>
           </div>
         </dl>
       </figcaption>

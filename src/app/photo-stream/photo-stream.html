@@ -1,9 +1,13 @@
 <div class="photo-stream-container">
+  <h1 class="visually-hidden">Photo stream</h1>
+
   @if (favoritesStore.error(); as favoritesError) {
     <app-alert variant="error" [message]="favoritesError" />
   }
 
-  <app-photo-grid>
+  <p class="visually-hidden" role="status">{{ announcement() }}</p>
+
+  <app-photo-grid [attr.aria-busy]="status() === 'loading'">
     @for (photo of photos(); track photo.id; let i = $index) {
       <app-photo-grid-item
         [photo]="photo"

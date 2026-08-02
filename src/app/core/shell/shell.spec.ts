@@ -5,6 +5,7 @@ import { provideRouter } from '@angular/router';
 import { Shell } from './shell';
 import { Header } from './header/header';
 import { NavItem } from '../../shared/types';
+import { expectNoAxeViolations } from '../../../testing/axe';
 
 @Component({
   imports: [Shell],
@@ -51,5 +52,11 @@ describe('Shell', () => {
 
     const projected = hostFixture.nativeElement.querySelector('main.app-main .projected');
     expect(projected?.textContent).toBe('projected content');
+  });
+
+  it('has no axe violations', async () => {
+    const hostFixture = TestBed.createComponent(HostComponent);
+
+    await expectNoAxeViolations(hostFixture);
   });
 });

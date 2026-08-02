@@ -28,6 +28,7 @@ export class PhotoStream implements OnInit {
 
   readonly photos = signal<Photo[]>([]);
   readonly status = signal<StreamStatus>('idle');
+  readonly announcement = signal('');
 
   readonly canLoadMore = computed(() => this.status() === 'idle');
 
@@ -49,10 +50,12 @@ export class PhotoStream implements OnInit {
         next: (photos) => {
           if (photos.length === 0) {
             this.status.set('exhausted');
+            this.announcement.set('All photos loaded');
             return;
           }
 
           this.status.set('idle');
+          this.announcement.set(`${photos.length} more photos loaded`);
           this.nextPage = this.nextPage + 1;
           this.photos.update((existing) => {
             const existingIds = new Set(existing.map((photo) => photo.id));

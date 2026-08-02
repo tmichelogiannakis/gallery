@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { NEVER, of, throwError } from 'rxjs';
 import { Favorites } from './favorites';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { expectNoAxeViolations } from '../../testing/axe';
 
 const photos: Photo[] = [
   {
@@ -60,6 +61,12 @@ describe('Favorites', () => {
     expect(list).toHaveBeenCalledOnce();
   });
 
+  it('titles the page for screen-reader navigation', async () => {
+    await createComponent({ list: () => of(photos) });
+
+    expect(fixture.nativeElement.querySelector('h1').textContent).toBe('Favorites');
+  });
+
   it('renders a grid item per favorited photo', async () => {
     await createComponent({ list: () => of(photos) });
 
@@ -90,13 +97,30 @@ describe('Favorites', () => {
     expect(emptyMessage()).toBeNull();
   });
 
-  it('opens the details of the photo that was clicked', async () => {
+  it('links each photo to its details page', async () => {
     await createComponent({ list: () => of(photos) });
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
-    renderedItems()[1]?.querySelector('button')?.click();
+    const links = renderedItems().map((item) => item.querySelector('a')?.getAttribute('href'));
 
-    expect(navigate).toHaveBeenCalledExactlyOnceWith(['/photos', '1']);
+    expect(links).toEqual(['/photos/0', '/photos/1']);
+  });
+
+  it('has no axe violations once the favorites are rendered', async () => {
+    await createComponent({ list: () => of(photos) });
+
+    await expectNoAxeViolations(fixture);
+  });
+
+  it('has no axe violations while empty', async () => {
+    await createComponent({ list: () => of([]) });
+
+    await expectNoAxeViolations(fixture);
+  });
+
+  it('has no axe violations when the request errors', async () => {
+    await createComponent({ list: () => throwError(() => 'boom') });
+
+    await expectNoAxeViolations(fixture);
   });
 
   it('offers a retry when the request errors', async () => {

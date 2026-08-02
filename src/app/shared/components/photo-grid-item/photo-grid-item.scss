@@ -14,14 +14,20 @@
   background-color: var(--mat-sys-surface-container);
   color: var(--mat-sys-on-surface);
   overflow: hidden;
-  cursor: pointer;
   text-align: left;
+  text-decoration: none;
   font-family: inherit;
   position: relative;
   transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
   &:not(.photo-card-favorite) {
+    cursor: pointer;
     &:hover,
     &:focus-visible {
       border-color: var(--mat-sys-primary);
@@ -29,10 +35,6 @@
       .thumbnail-img {
         transform: scale(1.1);
       }
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--mat-sys-primary);
     }
   }
 }
@@ -70,6 +72,10 @@
 .thumbnail-img {
   object-fit: cover;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.photo-card-favorite .thumbnail-img {
+  opacity: 0.65;
 }
 
 .card-details {

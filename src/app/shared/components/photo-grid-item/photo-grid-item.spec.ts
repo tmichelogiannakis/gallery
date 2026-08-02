@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { PhotoGridItem } from './photo-grid-item';
 import { Photo } from '../../types';
 import { providePicsumImageLoader } from '../../../core/providers/picsum-image-loader';
+import { expectNoAxeViolations } from '../../../../testing/axe';
 
 const photo: Photo = {
   id: '0',
@@ -19,7 +21,7 @@ describe('PhotoGridItem', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PhotoGridItem],
-      providers: [providePicsumImageLoader()]
+      providers: [providePicsumImageLoader(), provideRouter([])]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PhotoGridItem);
@@ -53,6 +55,10 @@ describe('PhotoGridItem', () => {
     expect(query('.dimensions-meta').textContent).toBe('5000 × 3333');
   });
 
+  it('spells out the dimensions for screen readers', () => {
+    expect(query('.dimensions-meta').getAttribute('aria-label')).toBe('5000 by 3333 pixels');
+  });
+
   it('offers the card as a labelled control for favoriting the photo', () => {
     const card = query('.photo-card');
 
@@ -72,6 +78,10 @@ describe('PhotoGridItem', () => {
 
   it('leaves the photo unbadged until it is a favorite', () => {
     expect(query('.favorite-badge')).toBeNull();
+  });
+
+  it('has no axe violations', async () => {
+    await expectNoAxeViolations(fixture);
   });
 
   describe('when the photo is already a favorite', () => {
@@ -97,6 +107,10 @@ describe('PhotoGridItem', () => {
       expect(card.disabled).toBe(false);
     });
 
+    it('has no axe violations', async () => {
+      await expectNoAxeViolations(fixture);
+    });
+
     it('ignores clicks so the photo cannot be favorited twice', () => {
       const photoSelected = vi.fn();
       fixture.componentInstance.photoSelected.subscribe(photoSelected);
@@ -109,28 +123,32 @@ describe('PhotoGridItem', () => {
 
   describe('when the card opens the photo instead of favoriting it', () => {
     beforeEach(async () => {
-      fixture.componentRef.setInput('action', 'open');
+      fixture.componentRef.setInput('link', ['/photos', photo.id]);
       await fixture.whenStable();
     });
 
-    it('labels the card as opening the photo', () => {
-      expect(query('.photo-card').getAttribute('aria-label')).toBe(
-        'View photo by Alejandro Escamilla'
-      );
+    // A link so the photo can be opened in a new tab, copied, and announced as a link
+    it('offers the card as a link to the photo', () => {
+      const card = query('.photo-card');
+
+      expect(card.tagName).toBe('A');
+      expect(card.getAttribute('href')).toBe('/photos/0');
+      expect(card.textContent).toContain('Alejandro Escamilla');
     });
 
     it('stays actionable for a photo that is already a favorite', async () => {
-      const photoSelected = vi.fn();
-      fixture.componentInstance.photoSelected.subscribe(photoSelected);
       fixture.componentRef.setInput('isFavorite', true);
       await fixture.whenStable();
 
       const card = query('.photo-card');
-      card.click();
 
-      expect(card.getAttribute('aria-label')).toBe('View photo by Alejandro Escamilla');
+      expect(card.getAttribute('href')).toBe('/photos/0');
       expect(card.getAttribute('aria-disabled')).toBeNull();
-      expect(photoSelected).toHaveBeenCalledExactlyOnceWith(photo);
+      expect(query('.favorite-badge')).not.toBeNull();
+    });
+
+    it('has no axe violations', async () => {
+      await expectNoAxeViolations(fixture);
     });
   });
 

@@ -1,6 +1,7 @@
-import { Component, DestroyRef, computed, inject, input, OnInit } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +23,7 @@ export class PhotoDetails implements OnInit {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly title = inject(Title);
 
   readonly photo = input.required<Photo | null>();
 
@@ -34,6 +36,18 @@ export class PhotoDetails implements OnInit {
     const photo = this.photo();
     return photo ? `${photo.width} × ${photo.height}` : '';
   });
+
+  readonly dimensionsLabel = computed(() => {
+    const photo = this.photo();
+    return photo ? `${photo.width} by ${photo.height} pixels` : '';
+  });
+
+  constructor() {
+    effect(() => {
+      const photo = this.photo();
+      this.title.setTitle(photo ? `Photo by ${photo.author} · Gallery` : 'Photo · Gallery');
+    });
+  }
 
   ngOnInit(): void {
     this.favoritesStore.refresh();

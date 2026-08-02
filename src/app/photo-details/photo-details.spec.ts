@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, provideRouter } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { Subject, of, throwError } from 'rxjs';
 import type { MockInstance } from 'vitest';
 import { PhotoDetails } from './photo-details';
@@ -9,6 +10,7 @@ import { FavoritesService } from '../shared/services/favorites.service';
 import { FavoritesStore, REMOVE_ERROR_MESSAGE } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { expectNoAxeViolations } from '../../testing/axe';
 
 const photo: Photo = {
   id: '0',
@@ -88,11 +90,37 @@ describe('PhotoDetails', () => {
     expect(image()?.getAttribute('srcset')).toContain('https://picsum.photos/id/0/600/400 600w');
   });
 
+  it('spells out the dimensions for screen readers', () => {
+    createComponent(photo);
+
+    const dimensions = fixture.nativeElement.querySelector('.meta-entry dd') as HTMLElement;
+
+    expect(dimensions.getAttribute('aria-label')).toBe('5000 by 3333 pixels');
+  });
+
+  it('names the photo in the document title', () => {
+    createComponent(photo);
+
+    expect(TestBed.inject(Title).getTitle()).toBe('Photo by Alejandro Escamilla · Gallery');
+  });
+
   it('shows an error when the photo could not be resolved', () => {
     createComponent(null);
 
     expect(errorAlert()).not.toBeNull();
     expect(image()).toBeNull();
+  });
+
+  it('has no axe violations', async () => {
+    createComponent(photo);
+
+    await expectNoAxeViolations(fixture);
+  });
+
+  it('has no axe violations when the photo could not be resolved', async () => {
+    createComponent(null);
+
+    await expectNoAxeViolations(fixture);
   });
 
   it('asks for confirmation before removing the photo', () => {

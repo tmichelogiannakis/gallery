@@ -1,3 +1,5 @@
+<p class="visually-hidden" role="status">{{ statusMessage() }}</p>
+
 @if (loadingStore.isLoading()) {
-  <mat-progress-bar mode="indeterminate" aria-label="Loading" />
+  <mat-progress-bar mode="indeterminate" aria-hidden="true" />
 }

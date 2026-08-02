@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoadingIndicator } from './loading-indicator';
+import { expectNoAxeViolations } from '../../../../testing/axe';
 
 describe('LoadingIndicator', () => {
   let fixture: ComponentFixture<LoadingIndicator>;
@@ -25,5 +26,11 @@ describe('LoadingIndicator', () => {
     await createComponent('Loading favorites');
 
     expect(spinner()?.getAttribute('aria-label')).toBe('Loading favorites');
+  });
+
+  it('has no axe violations', async () => {
+    await createComponent('Loading favorites');
+
+    await expectNoAxeViolations(fixture);
   });
 });

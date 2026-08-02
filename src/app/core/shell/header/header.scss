@@ -1,11 +1,8 @@
 .app-header {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
   z-index: 1000;
-  color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary-container);
   background: var(--mat-sys-primary-container);
   transition:
     background-color 0.2s ease,
@@ -26,7 +23,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
-  color: var(--mat-sys-on-surface);
+  color: var(--mat-sys-on-primary-container);
   font-weight: 700;
   font-size: 1.25rem;
   border-radius: 0.5rem;

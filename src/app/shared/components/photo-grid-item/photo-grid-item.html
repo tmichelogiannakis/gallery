@@ -1,11 +1,21 @@
-<button
-  type="button"
-  class="photo-card"
-  [class.photo-card-favorite]="isFavorite()"
-  [attr.aria-label]="actionLabel()"
-  [attr.aria-disabled]="isUnavailable() ? 'true' : null"
-  (click)="handleItemClick()"
->
+@if (link(); as routerCommands) {
+  <a class="photo-card" [routerLink]="routerCommands">
+    <ng-container [ngTemplateOutlet]="cardBody" />
+  </a>
+} @else {
+  <button
+    type="button"
+    class="photo-card"
+    [class.photo-card-favorite]="isFavorite()"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-disabled]="isUnavailable() ? 'true' : null"
+    (click)="handleItemClick()"
+  >
+    <ng-container [ngTemplateOutlet]="cardBody" />
+  </button>
+}
+
+<ng-template #cardBody>
   <div class="thumbnail-wrapper">
     @if (isFavorite()) {
       <span class="favorite-badge">
@@ -26,6 +36,8 @@
   </div>
   <div class="card-details">
     <span class="author-name">{{ photo().author }}</span>
-    <span class="dimensions-meta">{{ dimensionsText() }}</span>
+    <span class="dimensions-meta" role="img" [attr.aria-label]="dimensionsLabel()">{{
+      dimensionsText()
+    }}</span>
   </div>
-</button>
+</ng-template>

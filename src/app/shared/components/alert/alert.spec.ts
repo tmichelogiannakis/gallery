@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Alert, AlertVariant } from './alert';
+import { expectNoAxeViolations } from '../../../../testing/axe';
 
 describe('Alert', () => {
   let fixture: ComponentFixture<Alert>;
@@ -41,6 +42,12 @@ describe('Alert', () => {
 
     expect(host().getAttribute('role')).toBe('alert');
     expect(host().classList).toContain('alert-error');
+  });
+
+  it('has no accessibility violations', async () => {
+    await createComponent('Something went wrong.', 'error');
+
+    await expectNoAxeViolations(fixture);
   });
 
   it('projects an action alongside the message', async () => {

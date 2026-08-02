@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { Header, ACTIVE_CLASS } from './header';
 import { NavItem } from '../../../shared/types';
+import { expectNoAxeViolations } from '../../../../testing/axe';
 
 @Component({ template: '' })
 class DummyComponent {}
@@ -83,6 +84,16 @@ describe('Header', () => {
     const [withIcon, withoutIcon] = fixture.debugElement.queryAll(By.css('.nav-links a'));
     expect(withIcon?.query(By.directive(MatIcon))?.componentInstance.fontIcon).toBe('image');
     expect(withoutIcon?.query(By.directive(MatIcon))).toBeNull();
+  });
+
+  it('has no axe violations', async () => {
+    fixture.componentRef.setInput('navItems', [
+      { label: 'Photos', iconName: 'image', path: '/photos' },
+      { label: 'Favorites', iconName: 'favorite', path: '/favorites' }
+    ] satisfies NavItem[]);
+    await fixture.whenStable();
+
+    await expectNoAxeViolations(fixture);
   });
 
   describe('routerLinkActive', () => {
