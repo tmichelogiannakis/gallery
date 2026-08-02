@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { Photo } from '../../shared/types';
 import { PhotosService, DELAY_MS, RETRY_DELAY_MS } from './photos.service';
 
@@ -78,9 +78,9 @@ describe('Photos', () => {
     expect(result).toEqual([photo]);
   });
 
-  it('falls back to an empty list after exhausting all retries', async () => {
-    let result: Photo[] | undefined;
-    service.list(1).subscribe((photos) => (result = photos));
+  it('propagates the error after exhausting all retries', async () => {
+    let error: unknown;
+    service.list(1).subscribe({ error: (err) => (error = err) });
 
     for (let attempt = 0; attempt < 3; attempt++) {
       httpMock
@@ -89,6 +89,7 @@ describe('Photos', () => {
       await vi.advanceTimersByTimeAsync(DELAY_MS + RETRY_DELAY_MS);
     }
 
-    expect(result).toEqual([]);
+    expect(error).toBeInstanceOf(HttpErrorResponse);
+    expect((error as HttpErrorResponse).status).toBe(500);
   });
 });

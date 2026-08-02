@@ -4,4 +4,26 @@
       <app-photo-grid-item [photo]="photo" [priority]="i < 10" />
     }
   </app-photo-grid>
+
+  @if (status() === 'loading') {
+    <div class="photo-stream-loading">
+      <mat-spinner diameter="80" aria-label="Loading more photos" />
+    </div>
+  }
+
+  @if (status() === 'error') {
+    <div class="photo-stream-error" role="alert">
+      <p class="photo-stream-error-message">Something went wrong while loading photos.</p>
+      <button matButton="filled" type="button" (click)="retryFailedPage()">Try again</button>
+    </div>
+  }
+
+  @if (canLoadMore()) {
+    <div
+      class="photo-stream-page-bottom"
+      aria-hidden="true"
+      appOnVisible
+      (visible)="loadNextPage()"
+    ></div>
+  }
 </div>

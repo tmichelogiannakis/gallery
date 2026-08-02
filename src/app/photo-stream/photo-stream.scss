@@ -20,3 +20,23 @@
     max-width: 1120px;
   }
 }
+
+.photo-stream-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.photo-stream-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+}
+
+.photo-stream-error-message {
+  margin: 0;
+  color: var(--mat-sys-error);
+  font: var(--mat-sys-body-medium);
+}
