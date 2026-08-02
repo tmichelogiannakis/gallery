@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// `aspect-ratio` is bound from the component, which shares the value with the image loader
+.thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.thumbnail-img {
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  // Both properties are set by the card that owns the interactive element
+  transform: scale(var(--photo-thumbnail-scale, 1));
+  opacity: var(--photo-thumbnail-opacity, 1);
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background-color: var(--mat-sys-surface-container);
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dimensions-meta {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}

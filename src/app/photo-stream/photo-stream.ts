@@ -5,7 +5,7 @@ import { PhotosService } from './services/photos.service';
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { Alert } from '../shared/components/alert/alert';
 import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
-import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
+import { PhotoFavoriteCard } from '../shared/components/photo-favorite-card/photo-favorite-card';
 import {
   PHOTO_GRID_PRIORITY_COUNT,
   PhotoGridDirective
@@ -19,7 +19,7 @@ type StreamStatus = 'idle' | 'loading' | 'error' | 'exhausted';
   selector: 'app-photo-stream',
   imports: [
     PhotoGridDirective,
-    PhotoGridItem,
+    PhotoFavoriteCard,
     Alert,
     LoadingIndicator,
     OnVisibleDirective,

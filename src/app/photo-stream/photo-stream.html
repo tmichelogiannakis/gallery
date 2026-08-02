@@ -9,7 +9,7 @@
 
   <div appPhotoGrid [attr.aria-busy]="status() === 'loading'">
     @for (photo of photos(); track photo.id; let i = $index) {
-      <app-photo-grid-item
+      <app-photo-favorite-card
         [photo]="photo"
         [priority]="i < priorityCount"
         [isFavorite]="favoritesStore.isFavorite(photo.id)"

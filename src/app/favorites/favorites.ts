@@ -6,11 +6,11 @@ import {
   PHOTO_GRID_PRIORITY_COUNT,
   PhotoGridDirective
 } from '../shared/directives/photo-grid.directive';
-import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
+import { PhotoLinkCard } from '../shared/components/photo-link-card/photo-link-card';
 
 @Component({
   selector: 'app-favorites',
-  imports: [PhotoGridDirective, PhotoGridItem, Alert, MatButtonModule],
+  imports: [PhotoGridDirective, PhotoLinkCard, Alert, MatButtonModule],
   templateUrl: './favorites.html'
 })
 export class Favorites {

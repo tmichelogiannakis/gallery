@@ -7,7 +7,7 @@
 
   <div appPhotoGrid>
     @for (photo of favoritesStore.photos(); track photo.id; let i = $index) {
-      <app-photo-grid-item
+      <app-photo-link-card
         [photo]="photo"
         [priority]="i < priorityCount"
         [link]="['/photos', photo.id]"

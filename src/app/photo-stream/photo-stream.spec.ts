@@ -43,7 +43,7 @@ describe('PhotoStream', () => {
   let fixture: ComponentFixture<PhotoStream>;
 
   const renderedItems = () =>
-    Array.from(fixture.nativeElement.querySelectorAll('app-photo-grid-item')) as HTMLElement[];
+    Array.from(fixture.nativeElement.querySelectorAll('app-photo-favorite-card')) as HTMLElement[];
 
   const sentinel = () => fixture.nativeElement.querySelector('.photo-stream-page-bottom');
 

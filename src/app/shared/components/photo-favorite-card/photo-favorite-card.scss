@@ -1,0 +1,28 @@
+@use '../../styles/photo-card';
+
+.photo-card-favorite {
+  // Dims the thumbnail in `app-photo-card-body`, which style encapsulation puts out of reach here
+  --photo-thumbnail-opacity: 0.65;
+}
+
+.favorite-badge {
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}

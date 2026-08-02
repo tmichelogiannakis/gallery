@@ -27,7 +27,7 @@ describe('Favorites', () => {
   let fixture: ComponentFixture<Favorites>;
 
   const renderedItems = () =>
-    Array.from(fixture.nativeElement.querySelectorAll('app-photo-grid-item')) as HTMLElement[];
+    Array.from(fixture.nativeElement.querySelectorAll('app-photo-link-card')) as HTMLElement[];
 
   const emptyMessage = () => fixture.nativeElement.querySelector('app-alert:not(.alert-error)');
 

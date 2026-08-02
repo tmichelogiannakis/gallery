@@ -1,0 +1,20 @@
+<div class="thumbnail-wrapper" [style.aspect-ratio]="thumbnailAspectRatio">
+  <ng-content />
+  <img
+    [ngSrc]="photo().id"
+    fill
+    ngSrcset="200w, 400w, 600w"
+    [sizes]="imageSizes"
+    [priority]="priority()"
+    placeholder
+    [loaderParams]="imageLoaderParams"
+    [alt]="altText()"
+    class="thumbnail-img"
+  />
+</div>
+<div class="card-details">
+  <span class="author-name">{{ photo().author }}</span>
+  <span class="dimensions-meta" role="img" [attr.aria-label]="dimensionsLabel()">{{
+    dimensionsText()
+  }}</span>
+</div>
