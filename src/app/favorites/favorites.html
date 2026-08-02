@@ -1,6 +1,10 @@
 <div class="favorites-container">
+  @if (favoritesStore.error(); as favoritesError) {
+    <app-alert variant="error" [message]="favoritesError" />
+  }
+
   <app-photo-grid>
-    @for (photo of photos(); track photo.id; let i = $index) {
+    @for (photo of favoritesStore.photos(); track photo.id; let i = $index) {
       <app-photo-grid-item
         [photo]="photo"
         [priority]="i < 10"
@@ -9,13 +13,13 @@
     }
   </app-photo-grid>
 
-  @if (status() === 'loading') {
+  @if (favoritesStore.status() === 'loading') {
     <app-loading-indicator ariaLabel="Loading favorites" />
   }
 
-  @if (status() === 'error') {
+  @if (favoritesStore.status() === 'error') {
     <app-alert variant="error" message="Something went wrong while loading your favorites.">
-      <button matButton="filled" type="button" (click)="loadFavorites()">Try again</button>
+      <button matButton="filled" type="button" (click)="reloadFavorites()">Try again</button>
     </app-alert>
   }
 

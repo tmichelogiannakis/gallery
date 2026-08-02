@@ -32,7 +32,7 @@ export class PhotoStream implements OnInit {
   readonly canLoadMore = computed(() => this.status() === 'idle');
 
   ngOnInit(): void {
-    this.favoritesStore.load();
+    this.favoritesStore.refresh();
     this.loadNextPage();
   }
 

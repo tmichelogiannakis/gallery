@@ -1,5 +1,6 @@
 import { DestroyRef, Service, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, catchError, defer, of, tap } from 'rxjs';
 import { FavoritesService } from './favorites.service';
 import { Photo } from '../types';
 
@@ -26,18 +27,26 @@ export class FavoritesStore {
     return this.ids().has(id);
   }
 
-  load(): void {
-    this.writeStatus.set('loading');
-    this.favoritesService
-      .list()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (photos) => {
-          this.writePhotos.set(photos);
-          this.writeStatus.set('loaded');
-        },
-        error: () => this.writeStatus.set('error')
-      });
+  // Cold, and emits nothing the signals do not already hold — subscribe only to know when the read is done
+  load(): Observable<Photo[]> {
+    return defer(() => {
+      this.writeStatus.set('loading');
+      return this.favoritesService.list();
+    }).pipe(
+      tap((photos) => {
+        this.writePhotos.set(photos);
+        this.writeStatus.set('loaded');
+      }),
+      catchError(() => {
+        this.writeStatus.set('error');
+        return of<Photo[]>([]);
+      })
+    );
+  }
+
+  // For callers that do not wait on the read, so they never have to subscribe themselves
+  refresh(): void {
+    this.load().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   add(photo: Photo): void {
@@ -59,5 +68,9 @@ export class FavoritesStore {
           this.writeError.set(ADD_ERROR_MESSAGE);
         }
       });
+  }
+
+  byId(id: string): Photo | undefined {
+    return this.writePhotos().find((photo) => photo.id === id);
   }
 }

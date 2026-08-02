@@ -1,15 +1,12 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { FavoritesService } from '../shared/services/favorites.service';
+import { FavoritesStore } from '../shared/services/favorites.store';
 import { Alert } from '../shared/components/alert/alert';
 import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
 import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
 import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
 import { Photo } from '../shared/types';
-
-type FavoritesStatus = 'loading' | 'loaded' | 'error';
 
 @Component({
   selector: 'app-favorites',
@@ -17,32 +14,17 @@ type FavoritesStatus = 'loading' | 'loaded' | 'error';
   templateUrl: './favorites.html',
   styleUrl: './favorites.scss'
 })
-export class Favorites implements OnInit {
-  private readonly favoritesService = inject(FavoritesService);
+export class Favorites {
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
 
-  readonly photos = signal<Photo[]>([]);
-  readonly status = signal<FavoritesStatus>('loading');
+  readonly favoritesStore = inject(FavoritesStore);
 
-  readonly isEmpty = computed(() => this.status() === 'loaded' && this.photos().length === 0);
+  readonly isEmpty = computed(
+    () => this.favoritesStore.status() === 'loaded' && this.favoritesStore.photos().length === 0
+  );
 
-  ngOnInit(): void {
-    this.loadFavorites();
-  }
-
-  loadFavorites(): void {
-    this.status.set('loading');
-    this.favoritesService
-      .list()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (photos) => {
-          this.photos.set(photos);
-          this.status.set('loaded');
-        },
-        error: () => this.status.set('error')
-      });
+  reloadFavorites(): void {
+    this.favoritesStore.refresh();
   }
 
   navigateToPhotoDetails(photo: Photo): void {

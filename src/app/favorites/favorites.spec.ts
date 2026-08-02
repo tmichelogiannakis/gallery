@@ -3,6 +3,7 @@ import { Router, provideRouter } from '@angular/router';
 import { NEVER, of, throwError } from 'rxjs';
 import { Favorites } from './favorites';
 import { FavoritesService } from '../shared/services/favorites.service';
+import { FavoritesStore } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
 
@@ -43,6 +44,9 @@ describe('Favorites', () => {
         provideRouter([])
       ]
     });
+
+    // Stands in for the route resolver, which reads the favorites before the page is rendered
+    TestBed.inject(FavoritesStore).refresh();
 
     fixture = TestBed.createComponent(Favorites);
     await fixture.whenStable();
