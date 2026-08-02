@@ -1,10 +1,10 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PhotosService } from './services/photos.service';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { Alert } from '../shared/components/alert/alert';
+import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
 import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
 import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
 import { OnVisibleDirective } from './directives/on-visible.directive';
@@ -14,14 +14,7 @@ type StreamStatus = 'idle' | 'loading' | 'error' | 'exhausted';
 
 @Component({
   selector: 'app-photo-stream',
-  imports: [
-    PhotoGrid,
-    PhotoGridItem,
-    Alert,
-    OnVisibleDirective,
-    MatButtonModule,
-    MatProgressSpinnerModule
-  ],
+  imports: [PhotoGrid, PhotoGridItem, Alert, LoadingIndicator, OnVisibleDirective, MatButtonModule],
   templateUrl: './photo-stream.html',
   styleUrl: './photo-stream.scss'
 })

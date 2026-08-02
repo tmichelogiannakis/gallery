@@ -10,9 +10,7 @@
   </app-photo-grid>
 
   @if (status() === 'loading') {
-    <div class="favorites-loading">
-      <mat-spinner diameter="80" aria-label="Loading favorites" />
-    </div>
+    <app-loading-indicator ariaLabel="Loading favorites" />
   }
 
   @if (status() === 'error') {

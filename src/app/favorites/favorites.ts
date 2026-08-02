@@ -1,9 +1,9 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { Alert } from '../shared/components/alert/alert';
+import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
 import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
 import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
 import { Photo } from '../shared/types';
@@ -12,7 +12,7 @@ type FavoritesStatus = 'loading' | 'loaded' | 'error';
 
 @Component({
   selector: 'app-favorites',
-  imports: [PhotoGrid, PhotoGridItem, Alert, MatButtonModule, MatProgressSpinnerModule],
+  imports: [PhotoGrid, PhotoGridItem, Alert, LoadingIndicator, MatButtonModule],
   templateUrl: './favorites.html',
   styleUrl: './favorites.scss'
 })

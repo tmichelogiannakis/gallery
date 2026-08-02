@@ -28,7 +28,7 @@ describe('Favorites', () => {
 
   const emptyMessage = () => fixture.nativeElement.querySelector('app-alert:not(.alert-error)');
 
-  const spinner = () => fixture.nativeElement.querySelector('.favorites-loading');
+  const spinner = () => fixture.nativeElement.querySelector('app-loading-indicator');
 
   const retryButton = () =>
     fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;

@@ -10,9 +10,7 @@
   </app-photo-grid>
 
   @if (status() === 'loading') {
-    <div class="photo-stream-loading">
-      <mat-spinner diameter="80" aria-label="Loading more photos" />
-    </div>
+    <app-loading-indicator ariaLabel="Loading more photos" />
   }
 
   @if (status() === 'error') {
