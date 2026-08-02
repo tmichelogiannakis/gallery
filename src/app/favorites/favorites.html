@@ -14,10 +14,6 @@
     }
   </app-photo-grid>
 
-  @if (favoritesStore.status() === 'loading') {
-    <app-loading-indicator ariaLabel="Loading favorites" />
-  }
-
   @if (favoritesStore.status() === 'error') {
     <app-alert variant="error" message="Something went wrong while loading your favorites.">
       <button matButton="filled" type="button" (click)="reloadFavorites()">Try again</button>
