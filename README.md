@@ -44,6 +44,25 @@ To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use th
 ng test
 ```
 
+## Verifying the project
+
+To run all quality checks in one go, use:
+
+```bash
+npm run verify
+```
+
+This runs, in order:
+
+| Step         | Command                | Description                                     |
+| ------------ | ---------------------- | ----------------------------------------------- |
+| Lint         | `npm run lint`         | ESLint over the project sources                 |
+| Type check   | `npm run typecheck`    | `ngc --noEmit` for both app and spec TS configs |
+| Format check | `npm run format:check` | Prettier check (no files are rewritten)         |
+| Unit tests   | `npm run test:ci`      | Vitest single run, no watch mode                |
+
+The command fails fast — the first failing step stops the run. Each step can also be run on its own, and `npm run lint:fix` and `npm run format` will fix most lint and formatting issues automatically.
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:
