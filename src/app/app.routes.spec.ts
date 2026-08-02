@@ -12,7 +12,7 @@ import { PhotoDetails } from './photo-details/photo-details';
 import { NotFound } from './not-found/not-found';
 import { FavoritesService } from './shared/services/favorites.service';
 import { Photo } from './shared/types';
-import { providePicsumImageLoader } from './core/providers/picsum-image-loader';
+import { provideFakeImageLoader } from '../testing/image-loader';
 
 const photo: Photo = {
   id: '42',
@@ -34,7 +34,7 @@ describe('app routes', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: FavoritesService, useValue: { get, list: () => of([]) } },
-        providePicsumImageLoader()
+        provideFakeImageLoader()
       ]
     });
   });

@@ -9,8 +9,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Alert } from '../shared/components/alert/alert';
 import { ConfirmDialog, ConfirmDialogData } from './components/confirm-dialog/confirm-dialog';
 import { FavoritesStore } from '../shared/services/favorites.store';
-import { PicsumLoaderParams } from '../core/providers/picsum-image-loader';
-import { Photo } from '../shared/types';
+import { Photo, PicsumLoaderParams } from '../shared/types';
 import { photoAltText, photoDimensionsLabel, photoDimensionsText } from '../shared/photo-labels';
 
 @Component({

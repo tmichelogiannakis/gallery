@@ -5,7 +5,7 @@ import { PhotosService } from './services/photos.service';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { ADD_ERROR_MESSAGE } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
-import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { provideFakeImageLoader } from '../../testing/image-loader';
 import { expectNoAxeViolations } from '../../testing/axe';
 
 const firstPhoto: Photo = {
@@ -86,7 +86,7 @@ describe('PhotoStream', () => {
             ...favoritesService
           }
         },
-        providePicsumImageLoader()
+        provideFakeImageLoader()
       ]
     });
 

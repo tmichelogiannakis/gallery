@@ -3,9 +3,11 @@ import { provideRouter } from '@angular/router';
 
 import { PhotoGridItem } from './photo-grid-item';
 import { Photo } from '../../types';
-import { providePicsumImageLoader } from '../../../core/providers/picsum-image-loader';
+import { provideFakeImageLoader } from '../../../../testing/image-loader';
 import { expectNoAxeViolations } from '../../../../testing/axe';
 import { PHOTO_GRID_ITEM_WIDTH_PX } from '../../directives/photo-grid.directive';
+
+const THUMBNAIL_RATIO = 2 / 3;
 
 const photo: Photo = {
   id: '0',
@@ -22,7 +24,7 @@ describe('PhotoGridItem', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PhotoGridItem],
-      providers: [providePicsumImageLoader(), provideRouter([])]
+      providers: [provideFakeImageLoader(), provideRouter([])]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PhotoGridItem);
@@ -33,32 +35,33 @@ describe('PhotoGridItem', () => {
   it('renders the thumbnail with a descriptive alt text', () => {
     const img = query('.thumbnail-img');
 
-    expect(img.getAttribute('src')).toBe('https://picsum.photos/id/0/400/600');
+    expect(img.getAttribute('src')).toBe(`/img/0?ar=${THUMBNAIL_RATIO}`);
     expect(img.getAttribute('alt')).toBe('Photo by Alejandro Escamilla');
   });
 
   it('offers a thumbnail candidate per configured width', () => {
     expect(query('.thumbnail-img').getAttribute('srcset')).toBe(
-      'https://picsum.photos/id/0/200/300 200w, ' +
-        'https://picsum.photos/id/0/400/600 400w, ' +
-        'https://picsum.photos/id/0/600/900 600w'
+      `/img/0/200?ar=${THUMBNAIL_RATIO} 200w, ` +
+        `/img/0/400?ar=${THUMBNAIL_RATIO} 400w, ` +
+        `/img/0/600?ar=${THUMBNAIL_RATIO} 600w`
     );
   });
 
-  it('shows a blurred placeholder until the thumbnail loads', () => {
+  it('shows a placeholder until the thumbnail loads', () => {
     expect(query('.thumbnail-img').style.backgroundImage).toContain(
-      'https://picsum.photos/id/0/30/45?blur=1'
+      `/img/0/30?ar=${THUMBNAIL_RATIO}&placeholder=1`
     );
   });
 
   it('paints the thumbnail box at the ratio it crops the image to', () => {
-    const [, width, height] = /\/id\/0\/(\d+)\/(\d+)/.exec(
-      query('.thumbnail-img').getAttribute('src') ?? ''
-    ) as RegExpExecArray;
+    const requestedRatio = new URL(
+      query('.thumbnail-img').getAttribute('src') ?? '',
+      'http://localhost'
+    ).searchParams.get('ar');
 
     const [ratioWidth, ratioHeight] = query('.thumbnail-wrapper').style.aspectRatio.split('/');
 
-    expect(Number(ratioWidth) / Number(ratioHeight)).toBeCloseTo(Number(width) / Number(height));
+    expect(Number(ratioWidth) / Number(ratioHeight)).toBeCloseTo(Number(requestedRatio));
   });
 
   it('tells the browser the thumbnail is displayed at the grid column width', () => {
@@ -183,8 +186,8 @@ describe('PhotoGridItem', () => {
 
     const img = query('.thumbnail-img');
 
-    expect(img.getAttribute('src')).toBe('https://picsum.photos/id/1/400/600');
-    expect(img.getAttribute('srcset')).toContain('https://picsum.photos/id/1/200/300 200w');
+    expect(img.getAttribute('src')).toBe(`/img/1?ar=${THUMBNAIL_RATIO}`);
+    expect(img.getAttribute('srcset')).toContain(`/img/1/200?ar=${THUMBNAIL_RATIO} 200w`);
     expect(query('.dimensions-meta').textContent).toBe('100 × 200');
   });
 });

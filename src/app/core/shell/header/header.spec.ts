@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { Header } from './header';
-import { NavItem } from '../../../shared/types';
+import { NavItem } from '../nav-item';
 import { expectNoAxeViolations } from '../../../../testing/axe';
 
 @Component({ template: '' })

@@ -1,14 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
-import { Photo } from '../../types';
+import { Photo, PicsumLoaderParams } from '../../types';
 import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { PicsumLoaderParams } from '../../../core/providers/picsum-image-loader';
 import { photoAltText, photoDimensionsLabel, photoDimensionsText } from '../../photo-labels';
 import { PHOTO_GRID_ITEM_WIDTH_PX } from '../../directives/photo-grid.directive';
 
-// Drives both the crop asked of the image loader and the box the thumbnail is painted into, so the
-// two cannot disagree.
 const THUMBNAIL_RATIO_WIDTH = 2;
 const THUMBNAIL_RATIO_HEIGHT = 3;
 

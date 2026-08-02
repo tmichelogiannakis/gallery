@@ -1,9 +1,8 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Photo } from '../../shared/types';
-
-export const FAVORITES_URL = '/api/favorites';
+import { Photo } from '../types';
+import { FAVORITES_URL, favoriteUrl } from '../favorites.api';
 
 @Service()
 export class FavoritesService {
@@ -14,7 +13,7 @@ export class FavoritesService {
   }
 
   get(id: string): Observable<Photo> {
-    return this.http.get<Photo>(`${FAVORITES_URL}/${id}`);
+    return this.http.get<Photo>(favoriteUrl(id));
   }
 
   add(photo: Photo): Observable<Photo> {
@@ -22,6 +21,6 @@ export class FavoritesService {
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${FAVORITES_URL}/${id}`);
+    return this.http.delete<void>(favoriteUrl(id));
   }
 }

@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { Shell } from './shell';
 import { Header } from './header/header';
-import { NavItem } from '../../shared/types';
+import { NavItem } from './nav-item';
 import { expectNoAxeViolations } from '../../../testing/axe';
 
 @Component({

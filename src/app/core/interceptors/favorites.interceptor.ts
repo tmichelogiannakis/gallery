@@ -1,14 +1,14 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { Observable, of, switchMap, throwError, timer } from 'rxjs';
 import { Photo } from '../../shared/types';
-import { FAVORITES_URL } from '../../shared/services/favorites.service';
+import { FAVORITES_URL, favoriteIdFromUrl } from '../../shared/favorites.api';
 
 export const FAVORITES_STORAGE_KEY = 'gallery.favorites';
 export const LATENCY_MS = 500;
 
 // Stands in for the favorites backend we do not have: persists to localStorage and answers like an endpoint
 export const favoritesInterceptor: HttpInterceptorFn = (req, next) => {
-  const favoriteId = readFavoriteIdFromUrl(req.url);
+  const favoriteId = favoriteIdFromUrl(req.url);
 
   if (favoriteId !== null && req.method === 'GET') {
     const photos = readFavorites();
@@ -69,16 +69,6 @@ const addPhotoToFavorites = (photo: Photo): void => {
   }
 
   localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites, photo]));
-};
-
-const readFavoriteIdFromUrl = (url: string): string | null => {
-  if (!url.startsWith(`${FAVORITES_URL}/`)) {
-    return null;
-  }
-
-  const id = url.slice(`${FAVORITES_URL}/`.length);
-
-  return id.length > 0 && !id.includes('/') ? id : null;
 };
 
 const removePhotoFromFavorites = (id: string): void => {

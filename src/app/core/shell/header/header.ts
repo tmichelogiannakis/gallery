@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NavItem } from '../../../shared/types';
+import { NavItem } from '../nav-item';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({

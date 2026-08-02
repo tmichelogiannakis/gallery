@@ -9,7 +9,7 @@ import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { FavoritesStore, REMOVE_ERROR_MESSAGE } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
-import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { provideFakeImageLoader } from '../../testing/image-loader';
 import { expectNoAxeViolations } from '../../testing/axe';
 
 const photo: Photo = {
@@ -59,7 +59,7 @@ describe('PhotoDetails', () => {
     TestBed.configureTestingModule({
       imports: [PhotoDetails],
       providers: [
-        providePicsumImageLoader(),
+        provideFakeImageLoader(),
         provideRouter([]),
         { provide: FavoritesService, useValue: favoritesService },
         { provide: MatDialog, useValue: dialog }
@@ -87,7 +87,9 @@ describe('PhotoDetails', () => {
     createComponent(photo);
 
     expect(image()?.getAttribute('alt')).toBe('Photo by Alejandro Escamilla');
-    expect(image()?.getAttribute('srcset')).toContain('https://picsum.photos/id/0/600/400 600w');
+    expect(image()?.getAttribute('srcset')).toContain(
+      `/img/0/600?ar=${photo.width / photo.height} 600w`
+    );
   });
 
   it('spells out the dimensions for screen readers', () => {

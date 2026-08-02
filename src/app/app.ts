@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Shell } from './core/shell/shell';
-import { NavItem } from './shared/types';
+import { NavItem } from './core/shell/nav-item';
 
 @Component({
   selector: 'app-root',

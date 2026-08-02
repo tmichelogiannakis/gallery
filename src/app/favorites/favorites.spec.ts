@@ -5,7 +5,7 @@ import { Favorites } from './favorites';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
-import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
+import { provideFakeImageLoader } from '../../testing/image-loader';
 import { expectNoAxeViolations } from '../../testing/axe';
 
 const photos: Photo[] = [
@@ -41,7 +41,7 @@ describe('Favorites', () => {
       imports: [Favorites],
       providers: [
         { provide: FavoritesService, useValue: favoritesService },
-        providePicsumImageLoader(),
+        provideFakeImageLoader(),
         provideRouter([])
       ]
     });

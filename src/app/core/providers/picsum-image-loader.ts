@@ -5,10 +5,6 @@ const PICSUM_BASE_URL = 'https://picsum.photos/id';
 const FALLBACK_WIDTH = 400;
 const DEFAULT_ASPECT_RATIO = 1;
 
-export interface PicsumLoaderParams {
-  aspectRatio: number;
-}
-
 // Builds picsum URLs from a photo id, so `NgOptimizedImage` can request a crop at the srcset widths
 export function picsumImageLoader({
   src,

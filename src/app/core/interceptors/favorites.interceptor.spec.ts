@@ -9,7 +9,7 @@ import {
 } from '@angular/common/http';
 import { Photo } from '../../shared/types';
 import { favoritesInterceptor, FAVORITES_STORAGE_KEY, LATENCY_MS } from './favorites.interceptor';
-import { FAVORITES_URL } from '../../shared/services/favorites.service';
+import { FAVORITES_URL } from '../../shared/favorites.api';
 
 const photo: Photo = {
   id: '0',

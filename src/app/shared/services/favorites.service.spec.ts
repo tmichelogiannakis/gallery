@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { Photo } from '../../shared/types';
-import { FavoritesService, FAVORITES_URL } from './favorites.service';
+import { Photo } from '../types';
+import { FAVORITES_URL } from '../favorites.api';
+import { FavoritesService } from './favorites.service';
 
 const photo: Photo = {
   id: '0',
