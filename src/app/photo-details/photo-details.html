@@ -1,8 +1,26 @@
 <div class="photo-details-container">
-  <a matButton routerLink="/favorites" class="back-link">
-    <mat-icon aria-hidden="true" fontIcon="arrow_back"></mat-icon>
-    Back to favorites
-  </a>
+  <div class="details-actions">
+    <a matButton routerLink="/favorites" class="back-link">
+      <mat-icon aria-hidden="true" fontIcon="arrow_back"></mat-icon>
+      Back to favorites
+    </a>
+
+    @if (photo()) {
+      <button
+        matButton="filled"
+        type="button"
+        class="remove-button"
+        [disabled]="isRemoving()"
+        (click)="removeFromFavorites()"
+      >
+        Remove from favorites
+      </button>
+    }
+  </div>
+
+  @if (removalStatus() === 'error') {
+    <app-alert variant="error" message="We could not remove this photo from your favorites." />
+  }
 
   @if (photo(); as photo) {
     <figure class="photo-figure">

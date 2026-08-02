@@ -22,6 +22,13 @@ export const favoritesInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
+  if (favoriteId !== null && req.method === 'DELETE') {
+    removePhotoFromFavorites(favoriteId);
+    return withLatency(
+      of(new HttpResponse<null>({ status: 204, statusText: 'No Content', body: null }))
+    );
+  }
+
   if (req.url === FAVORITES_URL && req.method === 'GET') {
     const photos = readFavorites();
     return withLatency(
@@ -72,6 +79,15 @@ const readFavoriteIdFromUrl = (url: string): string | null => {
   const id = url.slice(`${FAVORITES_URL}/`.length);
 
   return id.length > 0 && !id.includes('/') ? id : null;
+};
+
+const removePhotoFromFavorites = (id: string): void => {
+  const favorites = readFavorites();
+
+  localStorage.setItem(
+    FAVORITES_STORAGE_KEY,
+    JSON.stringify(favorites.filter((favorite) => favorite.id !== id))
+  );
 };
 
 const withLatency = <T>(observableResponse: Observable<HttpResponse<T>>) =>

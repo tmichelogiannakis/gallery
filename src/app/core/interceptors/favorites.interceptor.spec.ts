@@ -202,6 +202,50 @@ describe('favoritesInterceptor', () => {
     expect(favorite).toBeUndefined();
   });
 
+  it('drops the deleted photo from the stored favorites', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([otherPhoto, photo]));
+
+    http.delete(`${FAVORITES_URL}/${photo.id}`).subscribe();
+    await settle();
+
+    expect(storedFavorites()).toEqual([otherPhoto]);
+    httpMock.expectNone(`${FAVORITES_URL}/${photo.id}`);
+  });
+
+  it('answers a delete with no content', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([photo]));
+
+    let response: HttpResponse<unknown> | undefined;
+    http
+      .delete(`${FAVORITES_URL}/${photo.id}`, { observe: 'response' })
+      .subscribe((res) => (response = res));
+    await settle();
+
+    expect(response?.status).toBe(204);
+  });
+
+  it('answers a delete of a photo that was never favorited', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([otherPhoto]));
+
+    let completed = false;
+    http.delete(`${FAVORITES_URL}/${photo.id}`).subscribe({ complete: () => (completed = true) });
+    await settle();
+
+    expect(completed).toBe(true);
+    expect(storedFavorites()).toEqual([otherPhoto]);
+  });
+
+  it('keeps a delete pending until the faked latency has elapsed', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([photo]));
+
+    let completed = false;
+    http.delete(`${FAVORITES_URL}/${photo.id}`).subscribe({ complete: () => (completed = true) });
+
+    await vi.advanceTimersByTimeAsync(LATENCY_MS - 1);
+
+    expect(completed).toBe(false);
+  });
+
   it('leaves other methods on the favorites endpoint alone', async () => {
     http.delete<Photo[]>(FAVORITES_URL).subscribe();
     await settle();
