@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PhotoGridItem } from './photo-grid-item';
 import { Photo } from '../../../shared/types';
-import { providePicsumImageLoader } from '../../../shared/picsum-image-loader';
+import { providePicsumImageLoader } from '../../../core/providers/picsum-image-loader';
 
 const photo: Photo = {
   id: '0',
@@ -51,6 +51,22 @@ describe('PhotoGridItem', () => {
   it('renders the author and the original dimensions', () => {
     expect(query('.author-name').textContent).toBe('Alejandro Escamilla');
     expect(query('.dimensions-meta').textContent).toBe('5000 × 3333');
+  });
+
+  it('offers the card as a labelled control for favoriting the photo', () => {
+    const card = query('.photo-card');
+
+    expect(card.tagName).toBe('BUTTON');
+    expect(card.getAttribute('aria-label')).toBe('Add photo by Alejandro Escamilla to favorites');
+  });
+
+  it('emits the photo when the card is clicked', () => {
+    const photoSelected = vi.fn();
+    fixture.componentInstance.photoSelected.subscribe(photoSelected);
+
+    query('.photo-card').click();
+
+    expect(photoSelected).toHaveBeenCalledExactlyOnceWith(photo);
   });
 
   it('updates the rendered details when the photo changes', async () => {

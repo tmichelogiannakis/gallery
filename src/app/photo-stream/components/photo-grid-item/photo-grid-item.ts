@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Photo } from '../../../shared/types';
 import { NgOptimizedImage } from '@angular/common';
 
@@ -12,7 +12,13 @@ export class PhotoGridItem {
   photo = input.required<Photo>();
   priority = input(false);
 
-  altText = computed(() => `Photo by ${this.photo().author}`);
+  photoSelected = output<Photo>();
 
+  altText = computed(() => `Photo by ${this.photo().author}`);
   dimensionsText = computed(() => `${this.photo().width} × ${this.photo().height}`);
+  favoriteLabel = computed(() => `Add photo by ${this.photo().author} to favorites`);
+
+  handleItemClick = () => {
+    this.photoSelected.emit(this.photo());
+  };
 }

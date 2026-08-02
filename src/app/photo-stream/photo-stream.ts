@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PhotosService } from './services/photos.service';
+import { FavoritesService } from '../shared/services/favorites.service';
 import { PhotoGrid } from './components/photo-grid/photo-grid';
 import { PhotoGridItem } from './components/photo-grid-item/photo-grid-item';
 import { OnVisibleDirective } from './directives/on-visible.directive';
@@ -24,6 +25,7 @@ type StreamStatus = 'idle' | 'loading' | 'error' | 'exhausted';
 })
 export class PhotoStream implements OnInit {
   private readonly photosService = inject(PhotosService);
+  private readonly favoritesService = inject(FavoritesService);
   private readonly destroyRef = inject(DestroyRef);
 
   private nextPage = 1;
@@ -61,6 +63,16 @@ export class PhotoStream implements OnInit {
           });
         },
         error: () => this.status.set('error')
+      });
+  }
+
+  addPhotoToFavorites(photo: Photo): void {
+    this.favoritesService
+      .add(photo)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => console.log(`Photo by ${photo.author} added to favorites`),
+        error: (error) => console.error('Could not favorite the photo', error)
       });
   }
 

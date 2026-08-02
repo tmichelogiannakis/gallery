@@ -21,13 +21,18 @@
   transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     transform: scale(1.025);
     border-color: var(--mat-sys-primary);
 
     .thumbnail-img {
       transform: scale(1.1);
     }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
   }
 }
 

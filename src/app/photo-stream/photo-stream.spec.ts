@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
 import { PhotoStream } from './photo-stream';
 import { PhotosService } from './services/photos.service';
+import { FavoritesService } from '../shared/services/favorites.service';
 import { Photo } from '../shared/types';
-import { providePicsumImageLoader } from '../shared/picsum-image-loader';
+import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
 
 const photos: Photo[] = [
   {
@@ -52,10 +53,20 @@ describe('PhotoStream', () => {
     await fixture.whenStable();
   };
 
-  const createComponent = async (photosService: Pick<PhotosService, 'list'>) => {
+  const favoriteButton = (index: number) =>
+    renderedItems()[index]?.querySelector('.photo-card') as HTMLButtonElement;
+
+  const createComponent = async (
+    photosService: Pick<PhotosService, 'list'>,
+    favoritesService: Pick<FavoritesService, 'add'> = { add: (photo) => of(photo) }
+  ) => {
     TestBed.configureTestingModule({
       imports: [PhotoStream],
-      providers: [{ provide: PhotosService, useValue: photosService }, providePicsumImageLoader()]
+      providers: [
+        { provide: PhotosService, useValue: photosService },
+        { provide: FavoritesService, useValue: favoritesService },
+        providePicsumImageLoader()
+      ]
     });
 
     fixture = TestBed.createComponent(PhotoStream);
@@ -195,6 +206,26 @@ describe('PhotoStream', () => {
     expect(renderedItems()).toHaveLength(4);
     expect(retryButton()).toBeNull();
     expect(sentinel()).not.toBeNull();
+  });
+
+  it('favorites the clicked photo', async () => {
+    const add = vi.fn().mockReturnValue(of(photos[1]));
+
+    await createComponent({ list: () => of(photos) }, { add });
+    favoriteButton(1).click();
+    await fixture.whenStable();
+
+    expect(add).toHaveBeenCalledExactlyOnceWith(photos[1]);
+  });
+
+  it('keeps rendering the stream when favoriting fails', async () => {
+    const add = vi.fn().mockReturnValue(throwError(() => 'boom'));
+
+    await createComponent({ list: () => of(photos) }, { add });
+    favoriteButton(0).click();
+    await fixture.whenStable();
+
+    expect(renderedItems()).toHaveLength(2);
   });
 
   it('does not load again when the very first page comes back empty', async () => {

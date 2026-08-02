@@ -1,4 +1,9 @@
-<div class="photo-card">
+<button
+  type="button"
+  class="photo-card"
+  [attr.aria-label]="favoriteLabel()"
+  (click)="handleItemClick()"
+>
   <div class="thumbnail-wrapper">
     <img
       [ngSrc]="photo().id"
@@ -15,4 +20,4 @@
     <span class="author-name">{{ photo().author }}</span>
     <span class="dimensions-meta">{{ dimensionsText() }}</span>
   </div>
-</div>
+</button>
