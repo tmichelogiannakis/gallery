@@ -8,6 +8,7 @@
       <app-photo-grid-item
         [photo]="photo"
         [priority]="i < 10"
+        action="open"
         (photoSelected)="navigateToPhotoDetails($event)"
       />
     }

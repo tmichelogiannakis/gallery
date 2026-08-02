@@ -2,8 +2,8 @@
   type="button"
   class="photo-card"
   [class.photo-card-favorite]="isFavorite()"
-  [attr.aria-label]="favoriteLabel()"
-  [attr.aria-disabled]="isFavorite() ? 'true' : null"
+  [attr.aria-label]="actionLabel()"
+  [attr.aria-disabled]="isUnavailable() ? 'true' : null"
   (click)="handleItemClick()"
 >
   <div class="thumbnail-wrapper">

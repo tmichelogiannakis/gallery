@@ -107,6 +107,33 @@ describe('PhotoGridItem', () => {
     });
   });
 
+  describe('when the card opens the photo instead of favoriting it', () => {
+    beforeEach(async () => {
+      fixture.componentRef.setInput('action', 'open');
+      await fixture.whenStable();
+    });
+
+    it('labels the card as opening the photo', () => {
+      expect(query('.photo-card').getAttribute('aria-label')).toBe(
+        'View photo by Alejandro Escamilla'
+      );
+    });
+
+    it('stays actionable for a photo that is already a favorite', async () => {
+      const photoSelected = vi.fn();
+      fixture.componentInstance.photoSelected.subscribe(photoSelected);
+      fixture.componentRef.setInput('isFavorite', true);
+      await fixture.whenStable();
+
+      const card = query('.photo-card');
+      card.click();
+
+      expect(card.getAttribute('aria-label')).toBe('View photo by Alejandro Escamilla');
+      expect(card.getAttribute('aria-disabled')).toBeNull();
+      expect(photoSelected).toHaveBeenCalledExactlyOnceWith(photo);
+    });
+  });
+
   it('updates the rendered details when the photo changes', async () => {
     const nextPhoto: Photo = {
       ...photo,
