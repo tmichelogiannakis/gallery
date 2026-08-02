@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, input } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { Photo } from '../shared/types';
   templateUrl: './photo-details.html',
   styleUrl: './photo-details.scss'
 })
-export class PhotoDetails {
+export class PhotoDetails implements OnInit {
   private readonly favoritesStore = inject(FavoritesStore);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -34,6 +34,10 @@ export class PhotoDetails {
     const photo = this.photo();
     return photo ? `${photo.width} × ${photo.height}` : '';
   });
+
+  ngOnInit(): void {
+    this.favoritesStore.refresh();
+  }
 
   removeFromFavorites(): void {
     const photo = this.photo();
