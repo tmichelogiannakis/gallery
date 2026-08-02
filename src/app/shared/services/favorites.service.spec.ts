@@ -85,4 +85,23 @@ describe('FavoritesService', () => {
 
     expect(result).toEqual(photo);
   });
+
+  it('deletes the favorite through its own url', () => {
+    service.remove(photo.id).subscribe();
+
+    const req = httpMock.expectOne(`${FAVORITES_URL}/${photo.id}`);
+
+    expect(req.request.method).toBe('DELETE');
+
+    req.flush(null);
+  });
+
+  it('completes once the favorite has been deleted', () => {
+    let completed = false;
+    service.remove(photo.id).subscribe({ complete: () => (completed = true) });
+
+    httpMock.expectOne(`${FAVORITES_URL}/${photo.id}`).flush(null);
+
+    expect(completed).toBe(true);
+  });
 });

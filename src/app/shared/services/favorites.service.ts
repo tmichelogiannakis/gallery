@@ -20,4 +20,8 @@ export class FavoritesService {
   add(photo: Photo): Observable<Photo> {
     return this.http.post<Photo>(FAVORITES_URL, photo);
   }
+
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${FAVORITES_URL}/${id}`);
+  }
 }
