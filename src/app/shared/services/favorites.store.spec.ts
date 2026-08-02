@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { NEVER, Subject, firstValueFrom, of, throwError } from 'rxjs';
 import { FavoritesService } from './favorites.service';
-import { ADD_ERROR_MESSAGE, FavoritesStore } from './favorites.store';
+import { ADD_ERROR_MESSAGE, FavoritesStore, REMOVE_ERROR_MESSAGE } from './favorites.store';
 import { Photo } from '../types';
 
 const firstPhoto: Photo = {
@@ -174,6 +174,67 @@ describe('FavoritesStore', () => {
       store.add(firstPhoto);
 
       expect(add).not.toHaveBeenCalled();
+      expect(store.photos()).toEqual(photos);
+    });
+  });
+
+  describe('removing', () => {
+    it('drops the photo before the request comes back', () => {
+      const remove = vi.fn().mockReturnValue(NEVER);
+      const store = createStore({ list: () => of(photos), remove });
+
+      store.refresh();
+      store.remove(firstPhoto.id);
+
+      expect(remove).toHaveBeenCalledExactlyOnceWith(firstPhoto.id);
+      expect(store.photos()).toEqual([secondPhoto]);
+      expect(store.isFavorite(firstPhoto.id)).toBe(false);
+    });
+
+    it('leaves the photo out once the request succeeds', () => {
+      const store = createStore({ list: () => of(photos), remove: () => of(undefined) });
+
+      store.refresh();
+      store.remove(firstPhoto.id);
+
+      expect(store.photos()).toEqual([secondPhoto]);
+      expect(store.error()).toBeNull();
+    });
+
+    it('puts the photo back where it was when the request fails', () => {
+      const pending = new Subject<void>();
+      const store = createStore({ list: () => of(photos), remove: () => pending });
+
+      store.refresh();
+      store.remove(firstPhoto.id);
+      pending.error('boom');
+
+      expect(store.photos()).toEqual(photos);
+      expect(store.error()).toBe(REMOVE_ERROR_MESSAGE);
+    });
+
+    it('clears an earlier failure when a new write starts', () => {
+      const remove = vi
+        .fn()
+        .mockReturnValueOnce(throwError(() => 'boom'))
+        .mockReturnValue(NEVER);
+      const store = createStore({ list: () => of(photos), remove });
+
+      store.refresh();
+      store.remove(firstPhoto.id);
+      store.remove(secondPhoto.id);
+
+      expect(store.error()).toBeNull();
+    });
+
+    it('ignores a photo it does not hold', () => {
+      const remove = vi.fn().mockReturnValue(of(undefined));
+      const store = createStore({ list: () => of(photos), remove });
+
+      store.refresh();
+      store.remove(newPhoto.id);
+
+      expect(remove).not.toHaveBeenCalled();
       expect(store.photos()).toEqual(photos);
     });
   });

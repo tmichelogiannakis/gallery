@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, provideRouter } from '@angular/router';
-import { Subject, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import type { MockInstance } from 'vitest';
 import { PhotoDetails } from './photo-details';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { FavoritesService } from '../shared/services/favorites.service';
+import { FavoritesStore, REMOVE_ERROR_MESSAGE } from '../shared/services/favorites.store';
 import { Photo } from '../shared/types';
 import { providePicsumImageLoader } from '../core/providers/picsum-image-loader';
 
@@ -18,7 +19,8 @@ const photo: Photo = {
 
 describe('PhotoDetails', () => {
   let fixture: ComponentFixture<PhotoDetails>;
-  let favoritesService: { remove: ReturnType<typeof vi.fn> };
+  let favoritesService: { list: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
+  let favoritesStore: FavoritesStore;
   let dialog: { open: ReturnType<typeof vi.fn> };
   let confirmation: Subject<boolean>;
   let navigate: MockInstance<Router['navigate']>;
@@ -48,7 +50,7 @@ describe('PhotoDetails', () => {
   };
 
   const createComponent = (resolvedPhoto: Photo | null) => {
-    favoritesService = { remove: vi.fn() };
+    favoritesService = { list: vi.fn().mockReturnValue(of([photo])), remove: vi.fn() };
     confirmation = new Subject<boolean>();
     dialog = { open: vi.fn(() => ({ afterClosed: () => confirmation })) };
 
@@ -63,6 +65,9 @@ describe('PhotoDetails', () => {
     });
 
     navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    favoritesStore = TestBed.inject(FavoritesStore);
+    favoritesStore.refresh();
 
     fixture = TestBed.createComponent(PhotoDetails);
     fixture.componentRef.setInput('photo', resolvedPhoto);
@@ -118,54 +123,39 @@ describe('PhotoDetails', () => {
     answerConfirmation(false);
 
     expect(favoritesService.remove).not.toHaveBeenCalled();
-    expect(removeButton()?.disabled).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
   });
 
-  it('goes back to the favorites once the photo has been removed', () => {
+  it('goes back to the favorites without waiting for the removal', () => {
     createComponent(photo);
-    const removal = new Subject<void>();
-    favoritesService.remove.mockReturnValue(removal);
+    favoritesService.remove.mockReturnValue(new Subject<void>());
 
     clickRemove();
     answerConfirmation(true);
-    removal.next();
 
     expect(navigate).toHaveBeenCalledWith(['/favorites']);
   });
 
-  it('stays on the page until the removal has come back', () => {
+  it('takes the photo out of the favorites everyone else reads right away', () => {
     createComponent(photo);
     favoritesService.remove.mockReturnValue(new Subject<void>());
 
     clickRemove();
     answerConfirmation(true);
 
-    expect(navigate).not.toHaveBeenCalled();
+    expect(favoritesStore.photos()).toEqual([]);
   });
 
-  it('does not remove the photo twice while a removal is in flight', () => {
-    createComponent(photo);
-    favoritesService.remove.mockReturnValue(new Subject<void>());
-
-    clickRemove();
-    answerConfirmation(true);
-    fixture.componentInstance.removeFromFavorites();
-
-    expect(dialog.open).toHaveBeenCalledTimes(1);
-    expect(favoritesService.remove).toHaveBeenCalledTimes(1);
-    expect(removeButton()?.disabled).toBe(true);
-  });
-
-  it('shows an error and stays on the page when the removal fails', () => {
+  it('leaves the failed removal to the store to undo', () => {
     createComponent(photo);
     favoritesService.remove.mockReturnValue(throwError(() => new Error('failed')));
 
     clickRemove();
     answerConfirmation(true);
 
-    expect(errorAlert()).not.toBeNull();
-    expect(navigate).not.toHaveBeenCalled();
-    expect(removeButton()?.disabled).toBe(false);
+    expect(navigate).toHaveBeenCalledWith(['/favorites']);
+    expect(favoritesStore.photos()).toEqual([photo]);
+    expect(favoritesStore.error()).toBe(REMOVE_ERROR_MESSAGE);
   });
 
   it('offers no removal when the photo could not be resolved', () => {

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,11 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { Alert } from '../shared/components/alert/alert';
 import { ConfirmDialog, ConfirmDialogData } from './components/confirm-dialog/confirm-dialog';
-import { FavoritesService } from '../shared/services/favorites.service';
+import { FavoritesStore } from '../shared/services/favorites.store';
 import { PicsumLoaderParams } from '../core/providers/picsum-image-loader';
 import { Photo } from '../shared/types';
-
-type RemovalStatus = 'idle' | 'removing' | 'error';
 
 @Component({
   selector: 'app-photo-details',
@@ -20,16 +18,12 @@ type RemovalStatus = 'idle' | 'removing' | 'error';
   styleUrl: './photo-details.scss'
 })
 export class PhotoDetails {
-  private readonly favoritesService = inject(FavoritesService);
+  private readonly favoritesStore = inject(FavoritesStore);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly photo = input.required<Photo | null>();
-
-  readonly removalStatus = signal<RemovalStatus>('idle');
-
-  readonly isRemoving = computed(() => this.removalStatus() === 'removing');
 
   readonly imageLoaderParams = computed<Partial<PicsumLoaderParams>>(() => {
     const photo = this.photo();
@@ -44,7 +38,7 @@ export class PhotoDetails {
   removeFromFavorites(): void {
     const photo = this.photo();
 
-    if (!photo || this.isRemoving()) {
+    if (!photo) {
       return;
     }
 
@@ -61,19 +55,10 @@ export class PhotoDetails {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.remove(photo.id);
+          // The store removes optimistically and rolls back on its own, so we can leave right away
+          this.favoritesStore.remove(photo.id);
+          this.router.navigate(['/favorites']);
         }
-      });
-  }
-
-  private remove(id: string): void {
-    this.removalStatus.set('removing');
-    this.favoritesService
-      .remove(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => this.router.navigate(['/favorites']),
-        error: () => this.removalStatus.set('error')
       });
   }
 }

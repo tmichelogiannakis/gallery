@@ -7,6 +7,7 @@ import { Photo } from '../types';
 export type FavoritesStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 export const ADD_ERROR_MESSAGE = 'We could not add this photo to your favorites.';
+export const REMOVE_ERROR_MESSAGE = 'We could not remove this photo from your favorites.';
 
 @Service()
 export class FavoritesStore {
@@ -66,6 +67,34 @@ export class FavoritesStore {
             photos.filter((favorite) => favorite.id !== photo.id)
           );
           this.writeError.set(ADD_ERROR_MESSAGE);
+        }
+      });
+  }
+
+  remove(id: string): void {
+    const removed = this.writePhotos().find((photo) => photo.id === id);
+
+    if (!removed) {
+      return;
+    }
+
+    const index = this.writePhotos().indexOf(removed);
+
+    this.writeError.set(null);
+    this.writePhotos.update((photos) => photos.filter((photo) => photo.id !== id));
+
+    this.favoritesService
+      .remove(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          // Back where it was, so a failed removal does not reshuffle the grid
+          this.writePhotos.update((photos) => [
+            ...photos.slice(0, index),
+            removed,
+            ...photos.slice(index)
+          ]);
+          this.writeError.set(REMOVE_ERROR_MESSAGE);
         }
       });
   }
