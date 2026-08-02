@@ -1,0 +1,50 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { Photo } from '../../shared/types';
+import { FavoritesService, FAVORITES_URL } from './favorites.service';
+
+const photo: Photo = {
+  id: '0',
+  author: 'Alejandro Escamilla',
+  width: 5000,
+  height: 3333
+};
+
+describe('FavoritesService', () => {
+  let service: FavoritesService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()]
+    });
+
+    service = TestBed.inject(FavoritesService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('posts the photo to the favorites endpoint', () => {
+    service.add(photo).subscribe();
+
+    const req = httpMock.expectOne(FAVORITES_URL);
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(photo);
+
+    req.flush(photo);
+  });
+
+  it('emits the created favorite', () => {
+    let result: Photo | undefined;
+    service.add(photo).subscribe((favorite) => (result = favorite));
+
+    httpMock.expectOne(FAVORITES_URL).flush(photo);
+
+    expect(result).toEqual(photo);
+  });
+});

@@ -1,0 +1,15 @@
+import { Service, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Photo } from '../../shared/types';
+
+export const FAVORITES_URL = '/api/favorites';
+
+@Service()
+export class FavoritesService {
+  private readonly http = inject(HttpClient);
+
+  add(photo: Photo): Observable<Photo> {
+    return this.http.post<Photo>(FAVORITES_URL, photo);
+  }
+}
