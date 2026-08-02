@@ -2,7 +2,7 @@ import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { PhotosService } from './services/photos.service';
-import { FavoritesService } from '../shared/services/favorites.service';
+import { FavoritesStore } from '../shared/services/favorites.store';
 import { Alert } from '../shared/components/alert/alert';
 import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
 import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
@@ -20,8 +20,9 @@ type StreamStatus = 'idle' | 'loading' | 'error' | 'exhausted';
 })
 export class PhotoStream implements OnInit {
   private readonly photosService = inject(PhotosService);
-  private readonly favoritesService = inject(FavoritesService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly favoritesStore = inject(FavoritesStore);
 
   private nextPage = 1;
 
@@ -31,6 +32,7 @@ export class PhotoStream implements OnInit {
   readonly canLoadMore = computed(() => this.status() === 'idle');
 
   ngOnInit(): void {
+    this.favoritesStore.load();
     this.loadNextPage();
   }
 
@@ -62,13 +64,7 @@ export class PhotoStream implements OnInit {
   }
 
   addPhotoToFavorites(photo: Photo): void {
-    this.favoritesService
-      .add(photo)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => console.log(`Photo by ${photo.author} added to favorites`),
-        error: (error) => console.error('Could not favorite the photo', error)
-      });
+    this.favoritesStore.add(photo);
   }
 
   retryFailedPage(): void {

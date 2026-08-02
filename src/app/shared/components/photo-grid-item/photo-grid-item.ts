@@ -1,17 +1,19 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Photo } from '../../types';
 import { NgOptimizedImage } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { PicsumLoaderParams } from '../../../core/providers/picsum-image-loader';
 
 @Component({
   selector: 'app-photo-grid-item',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, MatIconModule],
   templateUrl: './photo-grid-item.html',
   styleUrl: './photo-grid-item.scss'
 })
 export class PhotoGridItem {
   photo = input.required<Photo>();
   priority = input(false);
+  isFavorite = input(false);
 
   photoSelected = output<Photo>();
 
@@ -19,9 +21,16 @@ export class PhotoGridItem {
 
   altText = computed(() => `Photo by ${this.photo().author}`);
   dimensionsText = computed(() => `${this.photo().width} × ${this.photo().height}`);
-  favoriteLabel = computed(() => `Add photo by ${this.photo().author} to favorites`);
+  favoriteLabel = computed(() =>
+    this.isFavorite()
+      ? `Photo by ${this.photo().author} is in your favorites`
+      : `Add photo by ${this.photo().author} to favorites`
+  );
 
   handleItemClick = () => {
+    if (this.isFavorite()) {
+      return;
+    }
     this.photoSelected.emit(this.photo());
   };
 }

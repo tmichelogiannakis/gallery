@@ -21,18 +21,19 @@
   transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 
-  &:hover,
-  &:focus-visible {
-    transform: scale(1.025);
-    border-color: var(--mat-sys-primary);
+  &:not(.photo-card-favorite) {
+    &:hover,
+    &:focus-visible {
+      border-color: var(--mat-sys-primary);
 
-    .thumbnail-img {
-      transform: scale(1.1);
+      .thumbnail-img {
+        transform: scale(1.1);
+      }
     }
-  }
 
-  &:focus-visible {
-    outline: 2px solid var(--mat-sys-primary);
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+    }
   }
 }
 
@@ -42,6 +43,28 @@
   aspect-ratio: 2 / 3;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+.favorite-badge {
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
 }
 
 .thumbnail-img {

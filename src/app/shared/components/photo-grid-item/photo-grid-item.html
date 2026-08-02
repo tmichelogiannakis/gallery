@@ -1,10 +1,17 @@
 <button
   type="button"
   class="photo-card"
+  [class.photo-card-favorite]="isFavorite()"
   [attr.aria-label]="favoriteLabel()"
+  [attr.aria-disabled]="isFavorite() ? 'true' : null"
   (click)="handleItemClick()"
 >
   <div class="thumbnail-wrapper">
+    @if (isFavorite()) {
+      <span class="favorite-badge">
+        <mat-icon aria-hidden="true" fontIcon="favorite"></mat-icon>
+      </span>
+    }
     <img
       [ngSrc]="photo().id"
       fill

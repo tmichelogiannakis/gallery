@@ -58,6 +58,7 @@ describe('PhotoGridItem', () => {
 
     expect(card.tagName).toBe('BUTTON');
     expect(card.getAttribute('aria-label')).toBe('Add photo by Alejandro Escamilla to favorites');
+    expect(card.getAttribute('aria-disabled')).toBeNull();
   });
 
   it('emits the photo when the card is clicked', () => {
@@ -67,6 +68,43 @@ describe('PhotoGridItem', () => {
     query('.photo-card').click();
 
     expect(photoSelected).toHaveBeenCalledExactlyOnceWith(photo);
+  });
+
+  it('leaves the photo unbadged until it is a favorite', () => {
+    expect(query('.favorite-badge')).toBeNull();
+  });
+
+  describe('when the photo is already a favorite', () => {
+    beforeEach(async () => {
+      fixture.componentRef.setInput('isFavorite', true);
+      await fixture.whenStable();
+    });
+
+    it('badges the card', () => {
+      expect(query('.favorite-badge')).not.toBeNull();
+    });
+
+    it('says the photo is already a favorite rather than offering to add it', () => {
+      expect(query('.photo-card').getAttribute('aria-label')).toBe(
+        'Photo by Alejandro Escamilla is in your favorites'
+      );
+    });
+
+    it('marks the card as unavailable while keeping it in the tab order', () => {
+      const card = query('.photo-card') as HTMLButtonElement;
+
+      expect(card.getAttribute('aria-disabled')).toBe('true');
+      expect(card.disabled).toBe(false);
+    });
+
+    it('ignores clicks so the photo cannot be favorited twice', () => {
+      const photoSelected = vi.fn();
+      fixture.componentInstance.photoSelected.subscribe(photoSelected);
+
+      query('.photo-card').click();
+
+      expect(photoSelected).not.toHaveBeenCalled();
+    });
   });
 
   it('updates the rendered details when the photo changes', async () => {
