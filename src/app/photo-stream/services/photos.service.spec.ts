@@ -78,6 +78,35 @@ describe('Photos', () => {
     expect(result).toEqual([photo]);
   });
 
+  it('retries a request that was throttled', async () => {
+    let result: Photo[] | undefined;
+    service.list(1).subscribe((photos) => (result = photos));
+
+    httpMock
+      .expectOne((request) => request.url === LIST_URL)
+      .flush(null, { status: 429, statusText: 'Too Many Requests' });
+    await vi.advanceTimersByTimeAsync(DELAY_MS + RETRY_DELAY_MS);
+
+    httpMock.expectOne((request) => request.url === LIST_URL).flush([rawPhoto]);
+    await vi.advanceTimersByTimeAsync(DELAY_MS);
+
+    expect(result).toEqual([photo]);
+  });
+
+  it('does not retry a client error', async () => {
+    let error: unknown;
+    service.list(1).subscribe({ error: (err) => (error = err) });
+
+    httpMock
+      .expectOne((request) => request.url === LIST_URL)
+      .flush(null, { status: 400, statusText: 'Bad Request' });
+    await vi.advanceTimersByTimeAsync(DELAY_MS + RETRY_DELAY_MS);
+
+    httpMock.expectNone((request) => request.url === LIST_URL);
+    expect(error).toBeInstanceOf(HttpErrorResponse);
+    expect((error as HttpErrorResponse).status).toBe(400);
+  });
+
   it('propagates the error after exhausting all retries', async () => {
     let error: unknown;
     service.list(1).subscribe({ error: (err) => (error = err) });
