@@ -4,12 +4,13 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { providePicsumImageLoader } from './core/providers/picsum-image-loader';
 import { favoritesInterceptor } from './core/interceptors/favorites.interceptor';
+import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([favoritesInterceptor])),
+    provideHttpClient(withInterceptors([loadingInterceptor, favoritesInterceptor])),
     providePicsumImageLoader()
   ]
 };
