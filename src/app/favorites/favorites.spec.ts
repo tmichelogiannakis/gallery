@@ -30,7 +30,7 @@ describe('Favorites', () => {
 
   const emptyMessage = () => fixture.nativeElement.querySelector('app-alert:not(.alert-error)');
 
-  const spinner = () => fixture.nativeElement.querySelector('app-loading-indicator');
+  const errorAlert = () => fixture.nativeElement.querySelector('app-alert.alert-error');
 
   const retryButton = () =>
     fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;
@@ -68,17 +68,13 @@ describe('Favorites', () => {
     expect(authors).toEqual(['Alejandro Escamilla', 'Paul Jarvis']);
   });
 
-  it('shows a spinner until the favorites arrive', async () => {
+  // The wait itself is covered by the global loader, so the page only has to stay quiet
+  it('shows neither photos nor messages until the favorites arrive', async () => {
     await createComponent({ list: () => NEVER });
 
-    expect(spinner()).not.toBeNull();
     expect(renderedItems()).toEqual([]);
-  });
-
-  it('stops showing the spinner once the favorites arrive', async () => {
-    await createComponent({ list: () => of(photos) });
-
-    expect(spinner()).toBeNull();
+    expect(emptyMessage()).toBeNull();
+    expect(errorAlert()).toBeNull();
   });
 
   it('explains that there is nothing to show when no photo has been favorited', async () => {
@@ -108,7 +104,6 @@ describe('Favorites', () => {
 
     expect(retryButton()).not.toBeNull();
     expect(emptyMessage()).toBeNull();
-    expect(spinner()).toBeNull();
   });
 
   it('re-requests the favorites when the retry is used', async () => {

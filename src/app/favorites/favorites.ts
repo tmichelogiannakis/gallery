@@ -3,14 +3,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { Alert } from '../shared/components/alert/alert';
-import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
 import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
 import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
 import { Photo } from '../shared/types';
 
 @Component({
   selector: 'app-favorites',
-  imports: [PhotoGrid, PhotoGridItem, Alert, LoadingIndicator, MatButtonModule],
+  imports: [PhotoGrid, PhotoGridItem, Alert, MatButtonModule],
   templateUrl: './favorites.html',
   styleUrl: './favorites.scss'
 })
