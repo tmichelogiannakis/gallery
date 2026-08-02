@@ -19,5 +19,10 @@ export const routes: Routes = [
     // The title needs the resolved photo, so the component sets it rather than a resolver racing this one
     resolve: { photo: photoResolver },
     loadComponent: () => import('./photo-details/photo-details').then((m) => m.PhotoDetails)
+  },
+  {
+    path: '**',
+    title: 'Page not found · Gallery',
+    loadComponent: () => import('./not-found/not-found').then((m) => m.NotFound)
   }
 ];

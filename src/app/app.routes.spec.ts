@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { PhotoStream } from './photo-stream/photo-stream';
 import { Favorites } from './favorites/favorites';
 import { PhotoDetails } from './photo-details/photo-details';
+import { NotFound } from './not-found/not-found';
 import { FavoritesService } from './shared/services/favorites.service';
 import { Photo } from './shared/types';
 import { providePicsumImageLoader } from './core/providers/picsum-image-loader';
@@ -63,6 +64,17 @@ describe('app routes', () => {
 
     await harness.navigateByUrl('/favorites');
     expect(title.getTitle()).toBe('Favorites · Gallery');
+
+    await harness.navigateByUrl('/nope');
+    expect(title.getTitle()).toBe('Page not found · Gallery');
+  });
+
+  it('lazy loads NotFound for an unknown url', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    const component = await harness.navigateByUrl('/does/not/exist', NotFound);
+
+    expect(component).toBeInstanceOf(NotFound);
   });
 
   it('lazy loads PhotoDetails at "/photos/:id", bound to the prefetched photo', async () => {
