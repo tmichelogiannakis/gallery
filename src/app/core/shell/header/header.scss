@@ -45,8 +45,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
 
-.mdc-button.nav-link-active {
-  background: color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  .nav-link-active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  }
 }

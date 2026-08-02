@@ -59,6 +59,15 @@ describe('photoResolver', () => {
     expect(resolved).toEqual(photo);
   });
 
+  it('resolves to null without a request when the route carries no id', async () => {
+    const get = vi.fn();
+
+    const resolved = await resolve({ get }, '');
+
+    expect(get).not.toHaveBeenCalled();
+    expect(resolved).toBeNull();
+  });
+
   it('resolves to null when the request errors, so the navigation still happens', async () => {
     const resolved = await resolve({ get: () => throwError(() => 'boom') }, '0');
 

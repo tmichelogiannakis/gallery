@@ -10,7 +10,7 @@ import { NavItem } from './shared/types';
   styleUrl: './app.scss'
 })
 export class App {
-  navItems: NavItem[] = [
+  readonly navItems: NavItem[] = [
     { label: 'Photos', iconName: 'image', path: '/' },
     { label: 'Favorites', iconName: 'favorite', path: '/favorites' }
   ];

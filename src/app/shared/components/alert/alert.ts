@@ -4,7 +4,6 @@ export type AlertVariant = 'error' | 'info';
 
 @Component({
   selector: 'app-alert',
-  imports: [],
   templateUrl: './alert.html',
   styleUrl: './alert.scss',
   host: {

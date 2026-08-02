@@ -6,7 +6,7 @@
         <a
           matButton="text"
           [routerLink]="item.path"
-          [routerLinkActive]="activeClass"
+          routerLinkActive="nav-link-active"
           [routerLinkActiveOptions]="{ exact: item.path === '/' }"
         >
           @if (!!item.iconName) {

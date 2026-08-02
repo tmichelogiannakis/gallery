@@ -31,10 +31,10 @@ export class PhotoGridItem {
       : `Add photo by ${this.photo().author} to favorites`;
   });
 
-  handleItemClick = () => {
+  handleItemClick(): void {
     if (this.isUnavailable()) {
       return;
     }
     this.photoSelected.emit(this.photo());
-  };
+  }
 }

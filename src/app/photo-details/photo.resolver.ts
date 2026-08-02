@@ -7,7 +7,10 @@ import { Photo } from '../shared/types';
 
 // Resolves to null rather than failing the navigation, so the details page can show the error
 export const photoResolver: ResolveFn<Photo | null> = (route) => {
-  const id = route.paramMap.get('id') ?? '';
+  const id = route.paramMap.get('id');
+  if (!id) {
+    return null;
+  }
 
   // Coming from the favorites grid the store already holds the photo, so only a deep link pays for a request
   return (

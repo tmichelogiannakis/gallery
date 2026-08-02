@@ -32,6 +32,11 @@ export class PhotoDetails implements OnInit {
     return photo ? { aspectRatio: photo.width / photo.height } : {};
   });
 
+  readonly aspectRatio = computed(() => {
+    const photo = this.photo();
+    return photo ? `${photo.width} / ${photo.height}` : null;
+  });
+
   readonly dimensionsText = computed(() => {
     const photo = this.photo();
     return photo ? `${photo.width} × ${photo.height}` : '';

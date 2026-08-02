@@ -19,7 +19,7 @@
 
   @if (photo(); as photo) {
     <figure class="photo-figure">
-      <div class="photo-frame" [style.aspect-ratio]="photo.width + ' / ' + photo.height">
+      <div class="photo-frame" [style.aspect-ratio]="aspectRatio()">
         <img
           [ngSrc]="photo.id"
           fill

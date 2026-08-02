@@ -4,8 +4,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NavItem } from '../../../shared/types';
 import { MatIconModule } from '@angular/material/icon';
 
-export const ACTIVE_CLASS = 'nav-link-active';
-
 @Component({
   selector: 'app-header',
   imports: [MatButtonModule, RouterLink, RouterLinkActive, MatIconModule],
@@ -14,5 +12,4 @@ export const ACTIVE_CLASS = 'nav-link-active';
 })
 export class Header {
   navItems = input<NavItem[]>([]);
-  activeClass = ACTIVE_CLASS;
 }

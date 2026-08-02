@@ -3,12 +3,14 @@ import { provideRouter, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
-import { Header, ACTIVE_CLASS } from './header';
+import { Header } from './header';
 import { NavItem } from '../../../shared/types';
 import { expectNoAxeViolations } from '../../../../testing/axe';
 
 @Component({ template: '' })
 class DummyComponent {}
+
+const ACTIVE_CLASS = 'nav-link-active';
 
 describe('Header', () => {
   let component: Header;

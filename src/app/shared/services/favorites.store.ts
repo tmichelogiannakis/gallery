@@ -72,13 +72,15 @@ export class FavoritesStore {
   }
 
   remove(id: string): void {
-    const removed = this.writePhotos().find((photo) => photo.id === id);
-
-    if (!removed) {
+    const index = this.writePhotos().findIndex((photo) => photo.id === id);
+    if (index === -1) {
       return;
     }
 
-    const index = this.writePhotos().indexOf(removed);
+    const removed = this.writePhotos()[index];
+    if (!removed) {
+      return;
+    }
 
     this.writeError.set(null);
     this.writePhotos.update((photos) => photos.filter((photo) => photo.id !== id));
