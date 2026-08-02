@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { Header } from './header/header';
-import { NavItem } from '../shared/types';
+import { NavItem } from '../../shared/types';
 
 @Component({
   selector: 'app-shell',

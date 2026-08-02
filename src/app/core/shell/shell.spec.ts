@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { Shell } from './shell';
 import { Header } from './header/header';
-import { NavItem } from '../shared/types';
+import { NavItem } from '../../shared/types';
 
 @Component({
   imports: [Shell],

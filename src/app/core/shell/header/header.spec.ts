@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { Header, ACTIVE_CLASS } from './header';
-import { NavItem } from '../../shared/types';
+import { NavItem } from '../../../shared/types';
 
 @Component({ template: '' })
 class DummyComponent {}

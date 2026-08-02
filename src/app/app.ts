@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Shell } from './shell/shell';
+import { Shell } from './core/shell/shell';
 import { NavItem } from './shared/types';
 
 @Component({
