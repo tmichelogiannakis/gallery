@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, delay, map, Observable, of, retry } from 'rxjs';
+import { delay, map, Observable, retry } from 'rxjs';
 import { Photo } from '../../shared/types';
 
 interface ListItem {
@@ -27,6 +27,7 @@ export class PhotosService {
 
     return this.http.get<ListItem[]>(PICSUM_LIST_URL, { params }).pipe(
       delay(DELAY_MS),
+      retry({ count: RETRY_COUNT, delay: RETRY_DELAY_MS }),
       map((items) =>
         items.map(({ id, width, height, author }) => {
           return {
@@ -36,9 +37,7 @@ export class PhotosService {
             author
           };
         })
-      ),
-      retry({ count: RETRY_COUNT, delay: RETRY_DELAY_MS }),
-      catchError(() => of([]))
+      )
     );
   }
 }
