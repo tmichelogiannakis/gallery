@@ -50,7 +50,7 @@ describe('PhotoStream', () => {
   const liveRegion = () =>
     fixture.nativeElement.querySelector('[role="status"]') as HTMLElement | null;
 
-  const grid = () => fixture.nativeElement.querySelector('app-photo-grid') as HTMLElement | null;
+  const grid = () => fixture.nativeElement.querySelector('.photo-grid') as HTMLElement | null;
 
   const retryButton = () =>
     fixture.nativeElement.querySelector('app-alert.alert-error button') as HTMLButtonElement | null;

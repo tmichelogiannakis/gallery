@@ -82,3 +82,11 @@ body {
   white-space: nowrap;
   border: 0;
 }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px);
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}

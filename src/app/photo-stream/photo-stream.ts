@@ -5,8 +5,8 @@ import { PhotosService } from './services/photos.service';
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { Alert } from '../shared/components/alert/alert';
 import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
-import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
 import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
+import { PhotoGridDirective } from '../shared/directives/photo-grid.directive';
 import { OnVisibleDirective } from './directives/on-visible.directive';
 import { Photo } from '../shared/types';
 
@@ -14,7 +14,14 @@ type StreamStatus = 'idle' | 'loading' | 'error' | 'exhausted';
 
 @Component({
   selector: 'app-photo-stream',
-  imports: [PhotoGrid, PhotoGridItem, Alert, LoadingIndicator, OnVisibleDirective, MatButtonModule],
+  imports: [
+    PhotoGridDirective,
+    PhotoGridItem,
+    Alert,
+    LoadingIndicator,
+    OnVisibleDirective,
+    MatButtonModule
+  ],
   templateUrl: './photo-stream.html',
   styleUrl: './photo-stream.scss'
 })

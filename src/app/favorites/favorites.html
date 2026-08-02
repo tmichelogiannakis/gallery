@@ -5,11 +5,11 @@
     <app-alert variant="error" [message]="favoritesError" />
   }
 
-  <app-photo-grid>
+  <div appPhotoGrid>
     @for (photo of favoritesStore.photos(); track photo.id; let i = $index) {
       <app-photo-grid-item [photo]="photo" [priority]="i < 10" [link]="['/photos', photo.id]" />
     }
-  </app-photo-grid>
+  </div>
 
   @if (favoritesStore.status() === 'error') {
     <app-alert variant="error" message="Something went wrong while loading your favorites.">
