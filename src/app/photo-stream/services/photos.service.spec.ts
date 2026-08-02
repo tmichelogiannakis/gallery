@@ -19,9 +19,7 @@ const photo: Photo = {
   id: '0',
   author: 'Alejandro Escamilla',
   width: 5000,
-  height: 3333,
-  thumbnailUrl: 'https://picsum.photos/id/0/400/600',
-  originalUrl: 'https://picsum.photos/id/0/5000/3333'
+  height: 3333
 };
 
 describe('Photos', () => {

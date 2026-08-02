@@ -1,10 +1,12 @@
 <div class="photo-card">
   <div class="thumbnail-wrapper">
     <img
-      [ngSrc]="photo().thumbnailUrl"
+      [ngSrc]="photo().id"
       fill
-      sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw"
+      ngSrcset="200w, 400w, 600w"
+      sizes="200px"
       [priority]="priority()"
+      placeholder
       [alt]="altText()"
       class="thumbnail-img"
     />

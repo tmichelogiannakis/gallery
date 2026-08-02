@@ -28,14 +28,12 @@ export class PhotosService {
     return this.http.get<ListItem[]>(PICSUM_LIST_URL, { params }).pipe(
       delay(DELAY_MS),
       map((items) =>
-        items.map(({ id, width, height, download_url, author }) => {
+        items.map(({ id, width, height, author }) => {
           return {
             id,
             width,
             height,
-            author,
-            originalUrl: download_url,
-            thumbnailUrl: `https://picsum.photos/id/${id}/400/600`
+            author
           };
         })
       ),
