@@ -10,7 +10,7 @@
 }
 
 .header-container {
-  max-width: 1120px;
+  max-width: var(--gallery-content-max-width);
   margin: 0 auto;
   padding: 0.875rem 1.5rem;
   display: flex;

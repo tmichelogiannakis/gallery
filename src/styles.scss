@@ -30,6 +30,8 @@ $dark-theme: mat.define-theme(
 :root {
   color-scheme: light dark;
 
+  --gallery-content-max-width: 1120px;
+
   @include mat.all-component-themes($light-theme);
   @include mat.system-level-colors($light-theme);
   @include mat.system-level-typography($light-theme);
@@ -83,9 +85,18 @@ body {
   border: 0;
 }
 
+// Centres a routed page's content within the shared content width
+.page-container {
+  width: 100%;
+  max-width: var(--gallery-content-max-width);
+  margin: 0 auto;
+  padding: 30px 0;
+}
+
+// `--photo-grid-item-width` is set by `PhotoGridDirective`, which owns the value
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 200px);
+  grid-template-columns: repeat(auto-fill, var(--photo-grid-item-width));
   justify-content: center;
   gap: 20px;
   padding: 20px;

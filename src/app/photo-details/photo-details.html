@@ -1,4 +1,4 @@
-<div class="photo-details-container">
+<div class="page-container photo-details-container">
   <div class="details-actions">
     <a matButton routerLink="/favorites" class="back-link">
       <mat-icon aria-hidden="true" fontIcon="arrow_back"></mat-icon>
@@ -28,7 +28,7 @@
           priority
           placeholder
           [loaderParams]="imageLoaderParams()"
-          alt="Photo by {{ photo.author }}"
+          [alt]="altText()"
           class="photo-image"
         />
       </div>

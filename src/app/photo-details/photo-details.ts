@@ -11,6 +11,7 @@ import { ConfirmDialog, ConfirmDialogData } from './components/confirm-dialog/co
 import { FavoritesStore } from '../shared/services/favorites.store';
 import { PicsumLoaderParams } from '../core/providers/picsum-image-loader';
 import { Photo } from '../shared/types';
+import { photoAltText, photoDimensionsLabel, photoDimensionsText } from '../shared/photo-labels';
 
 @Component({
   selector: 'app-photo-details',
@@ -37,20 +38,25 @@ export class PhotoDetails implements OnInit {
     return photo ? `${photo.width} / ${photo.height}` : null;
   });
 
+  readonly altText = computed(() => {
+    const photo = this.photo();
+    return photo ? photoAltText(photo) : '';
+  });
+
   readonly dimensionsText = computed(() => {
     const photo = this.photo();
-    return photo ? `${photo.width} × ${photo.height}` : '';
+    return photo ? photoDimensionsText(photo) : '';
   });
 
   readonly dimensionsLabel = computed(() => {
     const photo = this.photo();
-    return photo ? `${photo.width} by ${photo.height} pixels` : '';
+    return photo ? photoDimensionsLabel(photo) : '';
   });
 
   constructor() {
     effect(() => {
       const photo = this.photo();
-      this.title.setTitle(photo ? `Photo by ${photo.author} · Gallery` : 'Photo · Gallery');
+      this.title.setTitle(photo ? `${photoAltText(photo)} · Gallery` : 'Photo · Gallery');
     });
   }
 

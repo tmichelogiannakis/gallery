@@ -1,4 +1,4 @@
-<div class="photo-stream-container">
+<div class="page-container">
   <h1 class="visually-hidden">Photo stream</h1>
 
   @if (favoritesStore.error(); as favoritesError) {
@@ -11,7 +11,7 @@
     @for (photo of photos(); track photo.id; let i = $index) {
       <app-photo-grid-item
         [photo]="photo"
-        [priority]="i < 10"
+        [priority]="i < priorityCount"
         [isFavorite]="favoritesStore.isFavorite(photo.id)"
         (photoSelected)="addPhotoToFavorites($event)"
       />

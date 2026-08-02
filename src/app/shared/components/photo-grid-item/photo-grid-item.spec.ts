@@ -5,6 +5,7 @@ import { PhotoGridItem } from './photo-grid-item';
 import { Photo } from '../../types';
 import { providePicsumImageLoader } from '../../../core/providers/picsum-image-loader';
 import { expectNoAxeViolations } from '../../../../testing/axe';
+import { PHOTO_GRID_ITEM_WIDTH_PX } from '../../directives/photo-grid.directive';
 
 const photo: Photo = {
   id: '0',
@@ -47,6 +48,23 @@ describe('PhotoGridItem', () => {
   it('shows a blurred placeholder until the thumbnail loads', () => {
     expect(query('.thumbnail-img').style.backgroundImage).toContain(
       'https://picsum.photos/id/0/30/45?blur=1'
+    );
+  });
+
+  it('paints the thumbnail box at the ratio it crops the image to', () => {
+    const [, width, height] = /\/id\/0\/(\d+)\/(\d+)/.exec(
+      query('.thumbnail-img').getAttribute('src') ?? ''
+    ) as RegExpExecArray;
+
+    const [ratioWidth, ratioHeight] = query('.thumbnail-wrapper').style.aspectRatio.split('/');
+
+    expect(Number(ratioWidth) / Number(ratioHeight)).toBeCloseTo(Number(width) / Number(height));
+  });
+
+  it('tells the browser the thumbnail is displayed at the grid column width', () => {
+    // `NgOptimizedImage` prefixes lazy images with `auto`, hence the substring match
+    expect(query('.thumbnail-img').getAttribute('sizes')).toContain(
+      `${PHOTO_GRID_ITEM_WIDTH_PX}px`
     );
   });
 

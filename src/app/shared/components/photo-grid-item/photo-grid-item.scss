@@ -39,10 +39,10 @@
   }
 }
 
+// `aspect-ratio` is bound from the component, which shares the value with the image loader
 .thumbnail-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.2);
 }

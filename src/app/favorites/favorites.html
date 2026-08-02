@@ -1,4 +1,4 @@
-<div class="favorites-container">
+<div class="page-container">
   <h1 class="visually-hidden">Favorites</h1>
 
   @if (favoritesStore.error(); as favoritesError) {
@@ -7,7 +7,11 @@
 
   <div appPhotoGrid>
     @for (photo of favoritesStore.photos(); track photo.id; let i = $index) {
-      <app-photo-grid-item [photo]="photo" [priority]="i < 10" [link]="['/photos', photo.id]" />
+      <app-photo-grid-item
+        [photo]="photo"
+        [priority]="i < priorityCount"
+        [link]="['/photos', photo.id]"
+      />
     }
   </div>
 

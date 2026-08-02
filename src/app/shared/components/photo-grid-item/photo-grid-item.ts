@@ -4,6 +4,13 @@ import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { PicsumLoaderParams } from '../../../core/providers/picsum-image-loader';
+import { photoAltText, photoDimensionsLabel, photoDimensionsText } from '../../photo-labels';
+import { PHOTO_GRID_ITEM_WIDTH_PX } from '../../directives/photo-grid.directive';
+
+// Drives both the crop asked of the image loader and the box the thumbnail is painted into, so the
+// two cannot disagree.
+const THUMBNAIL_RATIO_WIDTH = 2;
+const THUMBNAIL_RATIO_HEIGHT = 3;
 
 @Component({
   selector: 'app-photo-grid-item',
@@ -19,15 +26,19 @@ export class PhotoGridItem {
 
   photoSelected = output<Photo>();
 
-  readonly imageLoaderParams: PicsumLoaderParams = { aspectRatio: 2 / 3 };
+  readonly imageLoaderParams: PicsumLoaderParams = {
+    aspectRatio: THUMBNAIL_RATIO_WIDTH / THUMBNAIL_RATIO_HEIGHT
+  };
+  readonly thumbnailAspectRatio = `${THUMBNAIL_RATIO_WIDTH} / ${THUMBNAIL_RATIO_HEIGHT}`;
+  readonly imageSizes = `${PHOTO_GRID_ITEM_WIDTH_PX}px`;
 
-  altText = computed(() => `Photo by ${this.photo().author}`);
-  dimensionsText = computed(() => `${this.photo().width} × ${this.photo().height}`);
-  dimensionsLabel = computed(() => `${this.photo().width} by ${this.photo().height} pixels`);
+  altText = computed(() => photoAltText(this.photo()));
+  dimensionsText = computed(() => photoDimensionsText(this.photo()));
+  dimensionsLabel = computed(() => photoDimensionsLabel(this.photo()));
   isUnavailable = computed(() => !this.link() && this.isFavorite());
   ariaLabel = computed(() => {
     return this.isFavorite()
-      ? `Photo by ${this.photo().author} is in your favorites`
+      ? `${this.altText()} is in your favorites`
       : `Add photo by ${this.photo().author} to favorites`;
   });
 
