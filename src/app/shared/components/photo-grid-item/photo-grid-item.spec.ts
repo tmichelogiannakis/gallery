@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PhotoGridItem } from './photo-grid-item';
-import { Photo } from '../../../shared/types';
+import { Photo } from '../../types';
 import { providePicsumImageLoader } from '../../../core/providers/picsum-image-loader';
 
 const photo: Photo = {

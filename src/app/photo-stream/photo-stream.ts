@@ -4,8 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PhotosService } from './services/photos.service';
 import { FavoritesService } from '../shared/services/favorites.service';
-import { PhotoGrid } from './components/photo-grid/photo-grid';
-import { PhotoGridItem } from './components/photo-grid-item/photo-grid-item';
+import { PhotoGrid } from '../shared/components/photo-grid/photo-grid';
+import { PhotoGridItem } from '../shared/components/photo-grid-item/photo-grid-item';
 import { OnVisibleDirective } from './directives/on-visible.directive';
 import { Photo } from '../shared/types';
 

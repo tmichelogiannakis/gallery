@@ -1,5 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import { Photo } from '../../../shared/types';
+import { Photo } from '../../types';
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
