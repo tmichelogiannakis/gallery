@@ -1,1 +1,7 @@
-<p>photo-stream works!</p>
+<div class="photo-stream-container">
+  <app-photo-grid>
+    @for (photo of photos(); track photo.id; let i = $index) {
+      <app-photo-grid-item [photo]="photo" [priority]="i < 10" />
+    }
+  </app-photo-grid>
+</div>

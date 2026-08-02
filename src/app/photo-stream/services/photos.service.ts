@@ -12,14 +12,14 @@ interface ListItem {
   readonly download_url: string;
 }
 
-export const PICSUM_LIST_URL = 'https://picsum.photos/v2/list';
-const DELAY_MS = 500;
-const PAGE_SIZE = 30;
+const PICSUM_LIST_URL = 'https://picsum.photos/v2/list';
+export const DELAY_MS = 500;
+const PAGE_SIZE = 20;
 const RETRY_COUNT = 2;
-const RETRY_DELAY_MS = 250;
+export const RETRY_DELAY_MS = 250;
 
 @Service()
-export class Photos {
+export class PhotosService {
   private readonly http = inject(HttpClient);
 
   list(page: number): Observable<Photo[]> {
@@ -35,7 +35,7 @@ export class Photos {
             height,
             author,
             originalUrl: download_url,
-            thumbUrl: `https://picsum.photos/id/${id}/400/600`
+            thumbnailUrl: `https://picsum.photos/id/${id}/400/600`
           };
         })
       ),

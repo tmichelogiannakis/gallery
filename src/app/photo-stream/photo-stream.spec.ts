@@ -1,22 +1,64 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NEVER, of } from 'rxjs';
 
 import { PhotoStream } from './photo-stream';
+import { PhotosService } from './services/photos.service';
+import { Photo } from '../shared/types';
+
+const photos: Photo[] = [
+  {
+    id: '0',
+    author: 'Alejandro Escamilla',
+    width: 5000,
+    height: 3333,
+    thumbnailUrl: 'https://picsum.photos/id/0/400/600',
+    originalUrl: 'https://picsum.photos/id/0/5000/3333'
+  },
+  {
+    id: '1',
+    author: 'Paul Jarvis',
+    width: 2500,
+    height: 1667,
+    thumbnailUrl: 'https://picsum.photos/id/1/400/600',
+    originalUrl: 'https://picsum.photos/id/1/2500/1667'
+  }
+];
 
 describe('PhotoStream', () => {
-  let component: PhotoStream;
   let fixture: ComponentFixture<PhotoStream>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [PhotoStream]
-    }).compileComponents();
+  const renderedItems = () =>
+    Array.from(fixture.nativeElement.querySelectorAll('app-photo-grid-item')) as HTMLElement[];
+
+  const createComponent = async (photosService: Pick<PhotosService, 'list'>) => {
+    TestBed.configureTestingModule({
+      imports: [PhotoStream],
+      providers: [{ provide: PhotosService, useValue: photosService }]
+    });
 
     fixture = TestBed.createComponent(PhotoStream);
-    component = fixture.componentInstance;
     await fixture.whenStable();
+  };
+
+  it('requests the first page of photos', async () => {
+    const list = vi.fn().mockReturnValue(of(photos));
+
+    await createComponent({ list });
+
+    expect(list).toHaveBeenCalledExactlyOnceWith(1);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders a grid item per photo', async () => {
+    await createComponent({ list: () => of(photos) });
+
+    const authors = renderedItems().map((item) => item.querySelector('.author-name')?.textContent);
+
+    expect(authors).toEqual(['Alejandro Escamilla', 'Paul Jarvis']);
+  });
+
+  it('renders no grid items until the photos arrive', async () => {
+    await createComponent({ list: () => NEVER });
+
+    expect(renderedItems()).toEqual([]);
   });
 });

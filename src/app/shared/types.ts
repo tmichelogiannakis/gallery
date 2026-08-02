@@ -9,6 +9,6 @@ export interface Photo {
   width: number;
   height: number;
   author: string;
-  thumbUrl: string;
+  thumbnailUrl: string;
   originalUrl: string;
 }
