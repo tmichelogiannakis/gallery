@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { FavoritesService } from '../shared/services/favorites.service';
 import { Alert } from '../shared/components/alert/alert';
 import { LoadingIndicator } from '../shared/components/loading-indicator/loading-indicator';
@@ -18,6 +19,7 @@ type FavoritesStatus = 'loading' | 'loaded' | 'error';
 })
 export class Favorites implements OnInit {
   private readonly favoritesService = inject(FavoritesService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly photos = signal<Photo[]>([]);
@@ -44,6 +46,6 @@ export class Favorites implements OnInit {
   }
 
   navigateToPhotoDetails(photo: Photo): void {
-    console.log(`Navigating to photo details`, photo);
+    this.router.navigate(['/photos', photo.id]);
   }
 }

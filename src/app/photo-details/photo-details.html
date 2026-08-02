@@ -1,0 +1,35 @@
+<div class="photo-details-container">
+  <a matButton routerLink="/favorites" class="back-link">
+    <mat-icon aria-hidden="true" fontIcon="arrow_back"></mat-icon>
+    Back to favorites
+  </a>
+
+  @if (photo(); as photo) {
+    <figure class="photo-figure">
+      <div class="photo-frame" [style.aspect-ratio]="photo.width + ' / ' + photo.height">
+        <img
+          [ngSrc]="photo.id"
+          fill
+          ngSrcset="600w, 1200w, 2400w"
+          sizes="1200px"
+          priority
+          placeholder
+          [loaderParams]="imageLoaderParams()"
+          alt="Photo by {{ photo.author }}"
+          class="photo-image"
+        />
+      </div>
+      <figcaption class="photo-caption">
+        <h1 class="photo-author">{{ photo.author }}</h1>
+        <dl class="photo-meta">
+          <div class="meta-entry">
+            <dt>Dimensions (pixels)</dt>
+            <dd>{{ dimensionsText() }}</dd>
+          </div>
+        </dl>
+      </figcaption>
+    </figure>
+  } @else {
+    <app-alert variant="error" message="We could not load this photo." />
+  }
+</div>

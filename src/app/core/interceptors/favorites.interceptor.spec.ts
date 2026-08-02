@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import {
   HttpClient,
+  HttpErrorResponse,
   HttpResponse,
   provideHttpClient,
   withInterceptors
@@ -167,6 +168,38 @@ describe('favoritesInterceptor', () => {
     await vi.advanceTimersByTimeAsync(LATENCY_MS - 1);
 
     expect(favorites).toBeUndefined();
+  });
+
+  it('answers a read of a single favorite with the stored photo', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([otherPhoto, photo]));
+
+    let favorite: Photo | undefined;
+    http.get<Photo>(`${FAVORITES_URL}/${photo.id}`).subscribe((res) => (favorite = res));
+    await settle();
+
+    expect(favorite).toEqual(photo);
+    httpMock.expectNone(`${FAVORITES_URL}/${photo.id}`);
+  });
+
+  it('answers with a 404 when the photo has not been favorited', async () => {
+    let status: number | undefined;
+    http
+      .get<Photo>(`${FAVORITES_URL}/${photo.id}`)
+      .subscribe({ error: (error: HttpErrorResponse) => (status = error.status) });
+    await settle();
+
+    expect(status).toBe(404);
+  });
+
+  it('keeps a read of a single favorite pending until the faked latency has elapsed', async () => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([photo]));
+
+    let favorite: Photo | undefined;
+    http.get<Photo>(`${FAVORITES_URL}/${photo.id}`).subscribe((res) => (favorite = res));
+
+    await vi.advanceTimersByTimeAsync(LATENCY_MS - 1);
+
+    expect(favorite).toBeUndefined();
   });
 
   it('leaves other methods on the favorites endpoint alone', async () => {

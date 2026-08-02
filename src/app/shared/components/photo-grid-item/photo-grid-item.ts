@@ -1,6 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Photo } from '../../types';
 import { NgOptimizedImage } from '@angular/common';
+import { PicsumLoaderParams } from '../../../core/providers/picsum-image-loader';
 
 @Component({
   selector: 'app-photo-grid-item',
@@ -13,6 +14,8 @@ export class PhotoGridItem {
   priority = input(false);
 
   photoSelected = output<Photo>();
+
+  readonly imageLoaderParams: PicsumLoaderParams = { aspectRatio: 2 / 3 };
 
   altText = computed(() => `Photo by ${this.photo().author}`);
   dimensionsText = computed(() => `${this.photo().width} × ${this.photo().height}`);

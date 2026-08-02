@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
 import { NEVER, of, throwError } from 'rxjs';
 import { Favorites } from './favorites';
 import { FavoritesService } from '../shared/services/favorites.service';
@@ -38,7 +39,8 @@ describe('Favorites', () => {
       imports: [Favorites],
       providers: [
         { provide: FavoritesService, useValue: favoritesService },
-        providePicsumImageLoader()
+        providePicsumImageLoader(),
+        provideRouter([])
       ]
     });
 
@@ -86,6 +88,15 @@ describe('Favorites', () => {
     await createComponent({ list: () => of(photos) });
 
     expect(emptyMessage()).toBeNull();
+  });
+
+  it('opens the details of the photo that was clicked', async () => {
+    await createComponent({ list: () => of(photos) });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    renderedItems()[1]?.querySelector('button')?.click();
+
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(['/photos', '1']);
   });
 
   it('offers a retry when the request errors', async () => {

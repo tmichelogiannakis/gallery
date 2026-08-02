@@ -1,5 +1,5 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { defer, delay, of } from 'rxjs';
+import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { Observable, of, switchMap, throwError, timer } from 'rxjs';
 import { Photo } from '../../shared/types';
 import { FAVORITES_URL } from '../../shared/services/favorites.service';
 
@@ -8,24 +8,33 @@ export const LATENCY_MS = 500;
 
 // Stands in for the favorites backend we do not have: persists to localStorage and answers like an endpoint
 export const favoritesInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url !== FAVORITES_URL) {
-    return next(req);
-  }
+  const favoriteId = readFavoriteIdFromUrl(req.url);
 
-  if (req.method === 'GET') {
+  if (favoriteId !== null && req.method === 'GET') {
     const photos = readFavorites();
-    return defer(() =>
-      of(new HttpResponse<Photo[]>({ status: 200, statusText: 'OK', body: photos }))
-    ).pipe(delay(LATENCY_MS));
+    const photo = photos.find((favorite) => favorite.id === favoriteId);
+    return withLatency(
+      photo
+        ? of(new HttpResponse<Photo>({ status: 200, statusText: 'OK', body: photo }))
+        : throwError(
+            () => new HttpErrorResponse({ status: 404, statusText: 'Not Found', url: req.url })
+          )
+    );
   }
 
-  if (req.method === 'POST') {
-    const photo = req.body as Photo;
+  if (req.url === FAVORITES_URL && req.method === 'GET') {
+    const photos = readFavorites();
+    return withLatency(
+      of(new HttpResponse<Photo[]>({ status: 200, statusText: 'OK', body: photos }))
+    );
+  }
 
-    return defer(() => {
-      addPhotoToFavorites(photo);
-      return of(new HttpResponse<Photo>({ status: 201, statusText: 'Created', body: photo }));
-    }).pipe(delay(LATENCY_MS));
+  if (req.url === FAVORITES_URL && req.method === 'POST') {
+    const photo = req.body as Photo;
+    addPhotoToFavorites(photo);
+    return withLatency(
+      of(new HttpResponse<Photo>({ status: 201, statusText: 'Created', body: photo }))
+    );
   }
 
   return next(req);
@@ -54,3 +63,16 @@ const addPhotoToFavorites = (photo: Photo): void => {
 
   localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites, photo]));
 };
+
+const readFavoriteIdFromUrl = (url: string): string | null => {
+  if (!url.startsWith(`${FAVORITES_URL}/`)) {
+    return null;
+  }
+
+  const id = url.slice(`${FAVORITES_URL}/`.length);
+
+  return id.length > 0 && !id.includes('/') ? id : null;
+};
+
+const withLatency = <T>(observableResponse: Observable<HttpResponse<T>>) =>
+  timer(LATENCY_MS).pipe(switchMap(() => observableResponse));

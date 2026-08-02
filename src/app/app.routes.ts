@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { photoResolver } from './photo-details/photo.resolver';
 
 export const routes: Routes = [
   {
@@ -8,5 +9,10 @@ export const routes: Routes = [
   {
     path: 'favorites',
     loadComponent: () => import('./favorites/favorites').then((m) => m.Favorites)
+  },
+  {
+    path: 'photos/:id',
+    resolve: { photo: photoResolver },
+    loadComponent: () => import('./photo-details/photo-details').then((m) => m.PhotoDetails)
   }
 ];
